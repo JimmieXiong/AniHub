@@ -1,38 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import BackgroundImage from '../components/BackgroundImage';
-import Header from '../components/Header';
-import { firebaseAuth } from '../utils/firebase-config.js';
-import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import BackgroundImage from '../../components/ui/BackgroundImage.jsx';
+import Header from '../../components/layout/Header.jsx';
+import { firebaseAuth } from '../../config/firebase-config.js';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+
+export default function Signup() {
+
+  // formValues stores the email and password.
   const [formValues, setFormValues] = useState({
     email: '',
     password: ''
   });
+  
+  // useNavigate() allows navigation between pages 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  /**
+   * When the user clicks Create Account, firebase tries to create an account with the entered email and password.
+   * If successful, the user is automatically logged in and redicted to /home by onAuthStateChanged.
+   */
+  const handleSignIn = async () => {
     try {
       const { email, password } = formValues;
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
     } catch (error) {
       console.log(error);
     }
   };
-
+  
+  // useEffect ensures authentication check runs only when the component mounts.
+  // Firebase listens for authentication state changes. If user is already logged in they're auto redicted to /home.
   useEffect(() => {
-    onAuthStateChanged(firebaseAuth, (currentUser) => {
-      if (currentUser) navigate("/home");
-    });
+  onAuthStateChanged(firebaseAuth, (currentUser) => {
+    if (currentUser) navigate("/home"); // Navigate to /home on successful signup.
+  });
   }, [navigate]);
 
+  // updates the email and password state when the user types.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
-
+  
+  // Renders Signup Page
   return (
     <Container>
       <BackgroundImage />
@@ -44,8 +57,8 @@ export default function Login() {
             <h4>Stream your favorite Chinese and Japanese animated shows</h4>
           </div>
           <div className="title">
-              <h3>Login</h3>
-            </div>
+            <h3>Create Account</h3>
+          </div>
           <div className="form">
             <input
               type="email"
@@ -61,9 +74,9 @@ export default function Login() {
               value={formValues.password}
               onChange={handleInputChange}
             />
-            <button onClick={handleLogin}>Login</button>
+            <button onClick={handleSignIn}>Create Account</button>
             <div className="or-text">or</div>
-            <button className="create-account-button" onClick={() => navigate('/signup')}>Create Account</button>
+            <button className="login-button" onClick={() => navigate('/login')}>Login</button>
           </div>
         </div>
       </div>
@@ -83,8 +96,10 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align content to the top */
+    padding-top: 2rem; /* Adjust padding to move content up */
     .body {
+      margin-top: 2rem; /* Add margin to move content up */
       gap: 1rem;
       .text {
         gap: 1rem;
@@ -140,7 +155,9 @@ const Container = styled.div`
 
   @media (max-width: 768px) {
     .content {
+      padding-top: 1rem; /* Adjust padding for smaller screens */
       .body {
+        margin-top: 1rem; /* Adjust margin for smaller screens */
         .text {
           font-size: 1.2rem; 
           h1 {

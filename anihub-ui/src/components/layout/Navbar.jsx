@@ -2,8 +2,8 @@ import { signOut } from "firebase/auth";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import logo from "../assets/Logo.png";
-import { firebaseAuth } from "../utils/firebase-config";
+import logo from "../../assets/Logo.png";
+import { firebaseAuth } from "../../config/firebase-config";
 import { FaPowerOff, FaSearch } from "react-icons/fa";
 
 export default function Navbar({ isScrolled }) {
@@ -15,7 +15,7 @@ export default function Navbar({ isScrolled }) {
   ];
 
   return (
-    <Container>
+    <Container className="container">
       <nav className="flex">
         <div className="left flex a-center">
           <div className="brand flex a-center j-center">
@@ -82,7 +82,7 @@ const Container = styled.div`
       gap: 2rem;
       .brand {
         img {
-          height: 15rem; /* Adjust the height to make the logo bigger */
+          height: 5rem; /* Adjust the height to make the logo bigger */
           width: auto; /* Maintain aspect ratio */
           max-height: 100%; /* Ensure it doesn't exceed the container's height */
         }
@@ -146,11 +146,16 @@ const Container = styled.div`
       .show-search {
         border: 1px solid white;
         background-color: rgba(0, 0, 0, 0.6);
+        padding: 0.3rem; /* Add padding to create space around the input */
+        border-radius: 20px; /* Make the border rounded */
         input {
           width: 100%;
           opacity: 1;
           visibility: visible;
           padding: 0.3rem;
+          background-color: white; /* White background for the input */
+          color: black; /* Black text color for the input */
+          border-radius: 20px; /* Make the input rounded */
         }
       }
     }

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import BackgroundImage from '../assets/Home.png';
-import MovieLogo from '../assets/home-title.png';
+import Navbar from '../../components/layout/Navbar';
+import BackgroundImage from '../../assets/Home.png';
+import MovieLogo from '../../assets/home-title.png';
 import { FaPlay } from "react-icons/fa";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-export default function AniHub() {
+export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,7 +96,7 @@ const Container = styled.div`
             opacity: 0.8;
           }
           &:nth-of-type(1) {
-            background-color: #e50914;
+            background-color:rgb(74, 201, 57);
             color: white;
             svg {
               font-size: 1.8rem;

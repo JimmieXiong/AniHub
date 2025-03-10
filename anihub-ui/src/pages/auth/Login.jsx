@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import BackgroundImage from '../components/BackgroundImage';
-import Header from '../components/Header';
-import { firebaseAuth } from '../utils/firebase-config.js';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import BackgroundImage from '../../components/ui/BackgroundImage';
+import Header from '../../components/layout/Header';
+import { firebaseAuth } from '../../config/firebase-config';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-export default function Signup() {
+export default function Login() {
+  
   const [formValues, setFormValues] = useState({
     email: '',
     password: ''
   });
+
   const navigate = useNavigate();
 
-  const handleSignIn = async () => {
+  const handleLogin = async () => {
     try {
       const { email, password } = formValues;
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
     } catch (error) {
       console.log(error);
     }
   };
 
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) navigate("/home"); // Navigate to /home on successful signup
-  });
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (currentUser) => {
+      if (currentUser) navigate("/home");
+    });
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +46,7 @@ export default function Signup() {
             <h4>Stream your favorite Chinese and Japanese animated shows</h4>
           </div>
           <div className="title">
-              <h3>Create Account</h3>
+              <h3>Login</h3>
             </div>
           <div className="form">
             <input
@@ -59,9 +63,9 @@ export default function Signup() {
               value={formValues.password}
               onChange={handleInputChange}
             />
-            <button onClick={handleSignIn}>Create Account</button>
+            <button onClick={handleLogin}>Login</button>
             <div className="or-text">or</div>
-            <button className="login-button" onClick={() => navigate('/login')}>Login</button>
+            <button className="create-account-button" onClick={() => navigate('/signup')}>Create Account</button>
           </div>
         </div>
       </div>
@@ -81,8 +85,10 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align content to the top */
+    padding-top: 2rem; /* Adjust padding to move content up */
     .body {
+      margin-top: 2rem; /* Add margin to move content up */
       gap: 1rem;
       .text {
         gap: 1rem;
@@ -138,7 +144,9 @@ const Container = styled.div`
 
   @media (max-width: 768px) {
     .content {
+      padding-top: 1rem; /* Adjust padding for smaller screens */
       .body {
+        margin-top: 1rem; /* Adjust margin for smaller screens */
         .text {
           font-size: 1.2rem; 
           h1 {
