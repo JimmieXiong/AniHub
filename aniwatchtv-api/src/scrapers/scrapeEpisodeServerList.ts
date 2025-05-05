@@ -1,5 +1,5 @@
 import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
-import { headers } from "../config/headers"; // ✅ fixed import
+import { headers } from "../config/headers";
 import axios, { AxiosError } from "axios";
 import createHttpError, { type HttpError } from "http-errors";
 import { load, type CheerioAPI, type SelectorType } from "cheerio";
@@ -17,30 +17,38 @@ export const scrapeEpisodeServerList = async (
   };
 
   try {
-    const episodeId = episodeUrl.split("?ep=")[1];
-    const aniwatchUrls = await getAniWatchTVUrls();
+    const [animeId, query] = episodeUrl.split("?");
+    const searchParams = new URLSearchParams(query);
+    const episodeId = searchParams.get("ep");
 
-    const { data } = await axios.get(
-      `${aniwatchUrls.AJAX}/v2/episode/servers?episodeId=${episodeId}`,
-      {
-        headers: {
-          ...headers, // ✅ use constant headers
-          "X-Requested-With": "XMLHttpRequest",
-          Referer: new URL(`/watch/${episodeUrl}`, aniwatchUrls.BASE).href,
-        },
-      }
-    );
+    if (!episodeId) {
+      throw createHttpError.BadRequest("❌ Missing 'ep' parameter");
+    }
 
-    const $: CheerioAPI = load(data.html);
+    const { BASE, AJAX } = await getAniWatchTVUrls();
+    const targetUrl = `${AJAX}/v2/episode/servers?episodeId=${episodeId}`;
 
-    // Extract episode number
+    const response = await axios.get(targetUrl, {
+      headers: {
+        ...headers,
+        "X-Requested-With": "XMLHttpRequest",
+        Referer: `${BASE}/watch/${animeId}?ep=${episodeId}`, // ✅ correct Referer
+      },
+    });
+
+    if (!response.data?.html || typeof response.data.html !== "string") {
+      throw createHttpError(500, "❌ Invalid response: expected HTML string");
+    }
+
+    const $: CheerioAPI = load(response.data.html);
+
     const episodeNumberSelector: SelectorType = ".server-notice strong";
-    result.episodeNo = Number($(episodeNumberSelector).text().split(" ").pop()) || 0;
+    const epText = $(episodeNumberSelector).text().trim();
+    result.episodeNo = Number(epText.split(" ").pop()) || 0;
 
-    // Extract server lists
     const extractServers = (selector: string) =>
       $(selector)
-        .map((_, el) => ({
+        .map((_i, el) => ({
           serverName: $(el).find("a").text().toLowerCase().trim(),
           serverId: Number($(el).attr("data-server-id")?.trim()) || null,
         }))
@@ -61,6 +69,6 @@ export const scrapeEpisodeServerList = async (
       );
     }
 
-    throw createHttpError.InternalServerError("Internal server error");
+    throw createHttpError.InternalServerError("❌ Internal server error while scraping episode servers");
   }
 };

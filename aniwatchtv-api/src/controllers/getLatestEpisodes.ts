@@ -1,24 +1,20 @@
-import { RequestHandler } from "express";
-import extractLatestUpdated from "../extractors/extractLatestUpdated";
+import { scrapeLatestUpdated } from "../scrapers/scrapeLatestUpdated";
+import type { RequestHandler } from "express";
 
 export const getLatestEpisodes: RequestHandler = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
-    const episodes = await extractLatestUpdated(page);
 
-    // If the result is unexpectedly empty, log a warning
-    if (!episodes.length) {
-      console.warn(`⚠️ No latest episodes found for page ${page}`);
-    }
+    const { episodes, totalPages } = await scrapeLatestUpdated(page);
 
-    res.status(200).json({ latestEpisodes: episodes });
-  } catch (error: any) {
-    console.error("❌ getLatestEpisodes failed:", error.message || error);
+    console.log(`Hit /aniwatchtv/latest?page=${page}, scraped ${episodes.length} episodes`);
 
-    // Provide more detailed error response for debugging
-    res.status(500).json({
-      error: "Failed to fetch latest episodes",
-      message: error?.message || "Internal Server Error",
+    res.status(200).json({
+      latestEpisodes: episodes,
+      totalPages,
     });
+  } catch (err) {
+    console.error("getLatestEpisodes failed:", err);
+    res.status(500).json({ error: "Failed to fetch latest episodes" });
   }
 };

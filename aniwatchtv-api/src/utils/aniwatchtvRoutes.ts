@@ -14,11 +14,12 @@ const BASE_URL = "https://aniwatchtv.to";
 // Constructs full AniWatch route paths
 const buildAniWatchTVUrls = (baseUrl: string): AniWatchUrls => ({
   BASE: baseUrl,
-  HOME: baseUrl, // 👈 FIX: no `/home`
+  HOME: `${baseUrl}/home`, // IMPORTANT ROUTE DO NOT CHANGE OR YOU WILL GO CRAZY DEBUGGING!!!
   SEARCH: `${baseUrl}/search`,
   GENRE: `${baseUrl}/genre`,
   AJAX: `${baseUrl}/ajax`,
 });
+
 
 
 // Validates base URL reachability and returns full route set
@@ -33,5 +34,6 @@ const getAniWatchTVUrls = async (): Promise<AniWatchUrls> => {
     throw error;
   }
 };
+
 export { BASE_URL };
 export { getAniWatchTVUrls };

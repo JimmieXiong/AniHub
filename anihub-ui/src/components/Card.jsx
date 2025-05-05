@@ -1,42 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoPlayCircleSharp } from "react-icons/io5";
-import { AiOutlinePlus } from "react-icons/ai";
-import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
-import { BiChevronDown } from "react-icons/bi";
+import { AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
+import { MdClose } from "react-icons/md";
+import { Link } from "react-router-dom";
+import {
+  addToMyList,
+  removeFromMyList,
+  isInMyList,
+} from "../utils/firestoreUtils";
 
 export default function Card({ anime }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isInList, setIsInList] = useState(false);
+
   const title = anime.name?.trim() || anime.title?.trim() || "Untitled";
   const image = anime.img || anime.image;
-  const episode = anime.episode && anime.episode !== "Unknown Ep" ? anime.episode : null;
+  const animeId = anime.id || anime.slug || anime.animeId; // fallback logic
+  const episode =
+    anime.episode && anime.episode !== "Unknown Ep" ? anime.episode : null;
   const subOrDub = anime.subOrDub || null;
   const extraInfo = [episode, subOrDub].filter(Boolean).join(" • ");
 
+  useEffect(() => {
+    const check = async () => {
+      const exists = await isInMyList(animeId);
+      setIsInList(exists);
+    };
+    check();
+  }, [animeId]);
+
+  const handleAdd = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    await addToMyList(anime);
+    setIsInList(true);
+  };
+
+  const handleRemove = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    await removeFromMyList(animeId);
+    setIsInList(false);
+  };
+
   return (
-    <Container
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <img src={image} alt={title} />
-      <div className="title">{title}</div>
-      {isHovered && (
-        <div className="hover">
-          <img src={image} alt="preview" />
-          <div className="info">
-            <h3>{title}</h3>
-            {extraInfo && <p>{extraInfo}</p>}
-            <div className="icons">
-              <IoPlayCircleSharp />
-              <RiThumbUpFill />
-              <RiThumbDownFill />
-              <AiOutlinePlus />
-              <BiChevronDown />
+    <Link to={`/anime/${animeId}`} style={{ textDecoration: "none" }}>
+      <Container
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <img src={image} alt={title} />
+        <div className="title">{title}</div>
+
+        {isHovered && (
+          <div className="hover">
+            <img src={image} alt="preview" />
+            <div className="info">
+              <h3>{title}</h3>
+              {extraInfo && <p>{extraInfo}</p>}
+              <div className="icons">
+                <IconWrapper title="Play">
+                  <IoPlayCircleSharp />
+                </IconWrapper>
+                {!isInList ? (
+                  <IconWrapper title="Add to My List" onClick={handleAdd}>
+                    <AiOutlinePlus />
+                  </IconWrapper>
+                ) : (
+                  <>
+                    <IconWrapper title="In My List">
+                      <AiOutlineCheck style={{ color: "lightgreen" }} />
+                    </IconWrapper>
+                    <IconWrapper title="Remove from My List" onClick={handleRemove}>
+                      <MdClose style={{ color: "#ff4e4e" }} />
+                    </IconWrapper>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </Container>
+        )}
+      </Container>
+    </Link>
   );
 }
 
@@ -68,7 +114,7 @@ const Container = styled.div`
     background-color: #181818;
     border-radius: 0.3rem;
     padding: 1rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 
     img {
       width: 100%;
@@ -95,18 +141,36 @@ const Container = styled.div`
       .icons {
         display: flex;
         gap: 0.5rem;
-        color: #fff;
         margin-top: 0.5rem;
-
-        svg {
-          font-size: 1.2rem;
-          cursor: pointer;
-
-          &:hover {
-            color: #999;
-          }
-        }
       }
+    }
+  }
+`;
+
+const IconWrapper = styled.div`
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  position: relative;
+
+  &:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -1.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    color: white;
+    white-space: nowrap;
+  }
+
+  svg {
+    transition: color 0.2s;
+    &:hover {
+      color: #999;
     }
   }
 `;

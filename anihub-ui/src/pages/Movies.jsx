@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import BackgroundImage from "../components/HomeBackground"; // ✅ Background!
 
 export default function Movies() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,10 +50,8 @@ export default function Movies() {
   };
 
   return (
-    <>
+    <div style={styles.wrapper}>
       <Navbar />
-      <BackgroundImage /> {/* ✅ Adds background just like home */}
-
       <div style={styles.container}>
         <h1 style={styles.heading}>Movies</h1>
         {loading ? (
@@ -64,22 +61,26 @@ export default function Movies() {
         ) : (
           <>
             <div style={styles.grid}>
-              {movies.map((anime, index) => (
-                <div key={index} style={styles.card}>
-                  <div style={styles.imageWrapper}>
-                    <img
-                      src={anime.img}
-                      alt={anime.name}
-                      style={styles.image}
-                    />
-                    <div style={styles.titleOverlay}>
-                      <h3 style={styles.title}>
-                        {anime.name?.trim() || anime.title?.trim() || "Untitled"}
-                      </h3>
+              {movies.map((anime, index) => {
+                const animeId = anime.id || anime.animeId || anime.slug;
+                const title = anime.name?.trim() || anime.title?.trim() || "Untitled";
+                return (
+                  <Link
+                    to={`/anime/${animeId}`}
+                    key={animeId || index}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div style={styles.card}>
+                      <div style={styles.imageWrapper}>
+                        <img src={anime.img} alt={title} style={styles.image} />
+                        <div style={styles.titleOverlay}>
+                          <h3 style={styles.title}>{title}</h3>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
 
             <div style={styles.pagination}>
@@ -115,20 +116,28 @@ export default function Movies() {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
 const styles = {
+  wrapper: {
+    backgroundColor: "#0d0d0d",
+    minHeight: "100vh",
+  },
   container: {
     padding: "2rem",
     fontFamily: "sans-serif",
     position: "relative",
     zIndex: 2,
     color: "#fff",
+    maxWidth: "1200px",
+    margin: "0 auto",
   },
   heading: {
     marginBottom: "1.5rem",
+    fontSize: "2rem",
+    textAlign: "center",
   },
   grid: {
     display: "grid",
@@ -177,6 +186,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     gap: "0.5rem",
+    flexWrap: "wrap",
   },
   pageButton: {
     padding: "0.5rem 1rem",

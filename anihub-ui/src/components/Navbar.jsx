@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { signOut } from "firebase/auth";
-import { FaPowerOff } from "react-icons/fa";
+import { FaPowerOff, FaUserCircle } from "react-icons/fa";
 import { firebaseAuth } from "../utils/firebase-config";
 import logo from "../assets/Logo.png";
-import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar({ isScrolled }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const handleSearchSubmit = (e) => {
@@ -19,9 +20,25 @@ export default function Navbar({ isScrolled }) {
     }
   };
 
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  const handleNav = (path) => {
+    setDropdownOpen(false);
+    navigate(path);
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const links = [
     { name: "Home", link: "/home" },
-    { name: "TV Shows", link: "/tv" },
+    { name: "Latest", link: "/tv" },
     { name: "Movies", link: "/movies" },
     { name: "My List", link: "/mylist" },
   ];
@@ -52,18 +69,27 @@ export default function Navbar({ isScrolled }) {
         </form>
 
         <div className="right-section">
-          <ProfileIcon onClick={() => navigate("/profile")} title="Profile">
-            <FaUserCircle />
-          </ProfileIcon>
+          <ProfileWrapper ref={dropdownRef}>
+            <ProfileIcon
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              title="Profile"
+            >
+              <FaUserCircle />
+            </ProfileIcon>
+            {dropdownOpen && (
+              <DropdownMenu>
+                <button onClick={() => handleNav("/profile")}>View Profile</button>
+                <button onClick={() => handleNav("/change-account")}>Change Account Settings</button>
+                <button onClick={() => handleNav("/subscribe")}>Subscribe to AniHub</button>
+              </DropdownMenu>
+            )}
+          </ProfileWrapper>
+
           <PowerButton
             onClick={() => {
               signOut(firebaseAuth)
-                .then(() => {
-                  navigate("/login"); // 👈 Redirect after logout
-                })
-                .catch((err) => {
-                  console.error("Logout failed:", err.message);
-                });
+                .then(() => navigate("/login"))
+                .catch((err) => console.error("Logout failed:", err.message));
             }}
             title="Sign Out"
           >
@@ -74,6 +100,8 @@ export default function Navbar({ isScrolled }) {
     </Container>
   );
 }
+
+// Styled Components
 
 const Container = styled.nav`
   width: 100%;
@@ -94,18 +122,19 @@ const NavContent = styled.div`
   gap: 2rem;
 
   form {
-    flex: 1;
     display: flex;
     justify-content: center;
+    margin: 0 auto;
+    z-index: 0;
   }
 
   .right-section {
     display: flex;
     align-items: center;
     gap: 1rem;
+    position: relative;
   }
 `;
-
 
 const Left = styled.div`
   display: flex;
@@ -128,27 +157,21 @@ const NavLinks = styled.ul`
   margin: 0;
   padding: 0;
 
-  li {
-    display: flex;
-    align-items: center;
+  li a {
+    text-decoration: none;
+    color: #f0f0f0;
+    font-size: 0.92rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0.2rem 0;
+    line-height: 1;
+    transition: color 0.3s ease;
 
-    a {
-      text-decoration: none;
-      color: #f0f0f0;
-      font-size: 0.92rem;
-      font-weight: 500;
-      white-space: nowrap;
-      padding: 0.2rem 0;
-      line-height: 1;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: #ffffff;
-      }
+    &:hover {
+      color: #ffffff;
     }
   }
 `;
-
 
 const SearchInput = styled.input`
   width: 100%;
@@ -160,7 +183,6 @@ const SearchInput = styled.input`
   background: rgba(255, 255, 255, 0.95);
   color: #222;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: 0.3s ease;
 
   &::placeholder {
     color: #888;
@@ -170,6 +192,10 @@ const SearchInput = styled.input`
     outline: none;
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
   }
+`;
+
+const ProfileWrapper = styled.div`
+  position: relative;
 `;
 
 const ProfileIcon = styled.button`
@@ -184,6 +210,33 @@ const ProfileIcon = styled.button`
 
     &:hover {
       color: #bfffcc;
+    }
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  background: #222;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+
+  button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    color: #eee;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #333;
     }
   }
 `;

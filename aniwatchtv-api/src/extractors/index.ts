@@ -3,7 +3,6 @@ import { extractTop10Animes } from "./top10_animes";
 import { extractTrendingAnimes } from "./trending_animes";
 import { extractFeaturedAnimes } from "./futured_animes";
 import { extractTopUpcomingAnimes } from "./top_upcoming_animes";
-import { extractLatestEpisodes } from "./latest_anime_episodes";
 import { extractGenreList } from "./genre_list";
 
 import { extractAnimeDetails } from "./extractAnimeDetails";
@@ -18,29 +17,27 @@ import { extractCategoryAnimes } from "./category_animes";
 import { extractEpisodeList } from "./episodes";
 import { extractServerId } from "./server_id";
 import { extractAtoZAnimes } from "./atoz_animes";
-import extractLatestUpdated from "./extractLatestUpdated"; // ✅ NEW
+import { extractLatestEpisodes } from "./extractLatestUpdated"; 
 
 export {
-    extractSpotlightAnimes,
-    extractTop10Animes,
-    extractTrendingAnimes,
-    extractFeaturedAnimes,
-    extractTopUpcomingAnimes,
-    extractLatestEpisodes,
-    extractGenreList,
-  
-    extractAnimeDetails,
-    extractExtraAboutInfo,
-    extractAnimeSeasonsInfo,
-    extractRelatedAnimes,
-    extractRecommendedAnimes,
-    extractMostPopularAnimes,
-  
-    extractSearchedAnimes,
-    extractCategoryAnimes,
-    extractEpisodeList,
-    extractServerId,
-    extractAtoZAnimes,
-    extractLatestUpdated, // ✅ NEW
-  };
-  
+  extractSpotlightAnimes,
+  extractTop10Animes,
+  extractTrendingAnimes,
+  extractFeaturedAnimes,
+  extractTopUpcomingAnimes,
+  extractGenreList,
+
+  extractAnimeDetails,
+  extractExtraAboutInfo,
+  extractAnimeSeasonsInfo,
+  extractRelatedAnimes,
+  extractRecommendedAnimes,
+  extractMostPopularAnimes,
+
+  extractSearchedAnimes,
+  extractCategoryAnimes,
+  extractEpisodeList,
+  extractServerId,
+  extractAtoZAnimes,
+  extractLatestEpisodes,
+};

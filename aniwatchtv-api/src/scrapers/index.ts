@@ -8,6 +8,7 @@ import { scrapeStreamingSourceFromMegaCloud } from "./scrapeStreamingSourceFromM
 import { scrapeAtoZAnimeList } from "./scrapeAtoZAnimeList"; 
 import { scrapeLatestUpdated } from "./scrapeLatestUpdated"; 
 
+import { scrapeTrendingAnimes } from "./scrapeTrendingOnly";
 
 export {
   scrapeHomePage,
@@ -18,5 +19,6 @@ export {
   scrapeEpisodeServerList,
   scrapeStreamingSourceFromMegaCloud, 
   scrapeAtoZAnimeList,
-  scrapeLatestUpdated
+  scrapeLatestUpdated,
+  scrapeTrendingAnimes
 };

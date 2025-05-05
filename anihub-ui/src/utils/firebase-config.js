@@ -1,17 +1,18 @@
 import { initializeApp } from "firebase/app";
-import { getAuth}  from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAKxGdQMGqm75kXX0OrrneAOsTeVpXi0AA",
-  authDomain: "anihub-e954f.firebaseapp.com",
-  projectId: "anihub-e954f",
-  storageBucket: "anihub-e954f.firebasestorage.app",
-  messagingSenderId: "81380553354",
-  appId: "1:81380553354:web:64c9c8890a082cb9fe3373",
-  measurementId: "G-5XPB0W6EPB"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const firebaseAuth = getAuth(app);
+export const firestore = getFirestore(app);

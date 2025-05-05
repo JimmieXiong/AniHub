@@ -5,28 +5,57 @@ import Header from '../components/Header';
 import { firebaseAuth } from '../utils/firebase-config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { doc, setDoc } from "firebase/firestore";
+import { firestore } from "../utils/firebase-config";
 
 export default function Signup() {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
+    setError('');
   };
 
-  // Handle signup using Firebase
   const handleSignUp = async () => {
+    const { email, password } = formValues;
+
+    if (!email || !password) {
+      setError("Please fill in both fields.");
+      return;
+    }
+
+    setSuccessMessage("Successfully created account!");
+    setLoading(true);
+
     try {
-      const { email, password } = formValues;
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      // Redirect is now handled globally by <PublicRoute>
+      const { user } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+
+      await setDoc(doc(firestore, "users", user.uid), {
+        email: user.email,
+        isPremium: false,
+      });
+
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/home");
+      }, 3000);
     } catch (error) {
       console.error("Signup failed:", error.message);
-      // You can show an error message to the user here
+      setError("Signup failed. Try a different email.");
+      setSuccessMessage('');
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingSpinner message={successMessage} />;
+  }
 
   return (
     <Container>
@@ -56,6 +85,7 @@ export default function Signup() {
               value={formValues.password}
               onChange={handleInputChange}
             />
+            {error && <p className="error-text">{error}</p>}
             <button onClick={handleSignUp}>Create Account</button>
             <div className="or-text">or</div>
             <button className="login-button" onClick={() => navigate('/login')}>
@@ -68,9 +98,7 @@ export default function Signup() {
   );
 }
 
-
 const Container = styled.div`
-  // Sets the container to cover full screen and prevent overflow
   position: relative;
   height: 100vh;
   width: 100vw;
@@ -78,49 +106,46 @@ const Container = styled.div`
   overflow: hidden;
 
   .content {
-    // Covers the full screen behind content
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
     display: flex;
-    align-items: center; // vertically center the .body
-    justify-content: center; // horizontally center the .body
+    align-items: center;
+    justify-content: center;
   }
 
-
   .body {
-    // Card containing the form
     align-items: center;
     text-align: center;
-    max-width: 420px; // max card width
-    background: rgba(255, 255, 255, 0.1); // semi-transparent white
-    backdrop-filter: blur(14px); // blur behind it
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px);
     border-radius: 16px;
-    padding: 2.5rem 2rem; // spacing inside the card
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); // subtle shadow
-    border: 1px solid rgba(255, 255, 255, 0.2); // subtle border
-    color: #fff; // default text color
+    padding: 2.5rem 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
   }
 
   .text {
-    margin-bottom: 0.5rem; // spacing under the headline section
+    margin-bottom: 0.5rem;
 
     h1 {
-      font-size: 1.8rem; // main headline
+      font-size: 1.8rem;
       font-weight: 600;
       line-height: 1.4;
     }
 
     h4 {
-      font-size: 1rem; // subtitle
+      font-size: 1rem;
       font-weight: 400;
     }
   }
 
   .title {
-    margin-top: 0.75rem; // space before "Create Account"
+    margin-top: 0.75rem;
 
     h3 {
       font-size: 1.3rem;
@@ -132,25 +157,25 @@ const Container = styled.div`
   .form {
     display: flex;
     flex-direction: column;
-    gap: 1rem; // space between inputs and buttons
+    gap: 1rem;
     width: 100%;
     margin-top: 1rem;
 
     input {
       padding: 0.75rem 1rem;
       font-size: 1rem;
-      background: rgba(255, 255, 255, 0.15); // semi-transparent input
-      border: 1px solid rgba(255, 255, 255, 0.3); // soft border
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 8px;
       color: #fff;
 
       &::placeholder {
-        color: #ccc; // light placeholder text
+        color: #ccc;
       }
 
       &:focus {
         outline: none;
-        border-color: #fff; // white border on focus
+        border-color: #fff;
       }
     }
 
@@ -165,13 +190,13 @@ const Container = styled.div`
     }
 
     button:not(.login-button) {
-      background-color: #e50914; // Netflix red
+      background-color: #e50914;
       color: white;
       border: none;
 
       &:hover {
-        background-color: #f40612; // brighter red
-        transform: translateY(-1px); // lift effect on hover
+        background-color: #f40612;
+        transform: translateY(-1px);
       }
     }
 
@@ -190,9 +215,8 @@ const Container = styled.div`
       &:hover {
         background-color: #fff;
         color: #000;
-        transform: translateY(-1px); // same lift effect
+        transform: translateY(-1px);
       }
     }
   }
 `;
-

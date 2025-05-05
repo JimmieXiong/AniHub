@@ -4,11 +4,10 @@ import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
 import { headers } from "../config/headers";
 import type { LatestAnimeEpisode } from "../types/animeTypes";
 
-/**
- * Scrapes latest updated anime from AniWatchTV
- * @param page Optional page number (defaults to 1)
- */
-export const scrapeLatestUpdated = async (page = 1): Promise<LatestAnimeEpisode[]> => {
+export const scrapeLatestUpdated = async (page = 1): Promise<{
+  episodes: LatestAnimeEpisode[];
+  totalPages: number;
+}> => {
   try {
     const { BASE } = await getAniWatchTVUrls();
     const url = `${BASE}/recently-updated${page > 1 ? `?page=${page}` : ""}`;
@@ -17,7 +16,7 @@ export const scrapeLatestUpdated = async (page = 1): Promise<LatestAnimeEpisode[
 
     const res = await axios.get(url, {
       headers: {
-        ...headers, // ✅ now using static randomized headers
+        ...headers,
         Referer: BASE,
       },
     });
@@ -43,7 +42,15 @@ export const scrapeLatestUpdated = async (page = 1): Promise<LatestAnimeEpisode[
       });
     });
 
-    return animeList;
+    // Extract total pages from pagination
+    const totalPages = Math.max(
+      ...$(".pagination li a")
+        .map((_, el) => parseInt($(el).text()))
+        .get()
+        .filter((n) => !isNaN(n))
+    ) || 1;
+
+    return { episodes: animeList, totalPages };
   } catch (err) {
     console.error("❌ scrapeLatestUpdated FAILED:", err);
     throw err;

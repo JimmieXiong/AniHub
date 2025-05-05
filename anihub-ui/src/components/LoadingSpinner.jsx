@@ -1,10 +1,11 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-export default function LoadingSpinner() {
+export default function LoadingSpinner({ message = "Loading..." }) {
   return (
     <SpinnerWrapper>
       <div className="spinner" />
+      <p className="message">{message}</p>
     </SpinnerWrapper>
   );
 }
@@ -19,6 +20,7 @@ const SpinnerWrapper = styled.div`
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -30,5 +32,13 @@ const SpinnerWrapper = styled.div`
     width: 48px;
     height: 48px;
     animation: ${spin} 1s linear infinite;
+  }
+
+  .message {
+    margin-top: 1.25rem;
+    font-size: 1.1rem;
+    color: #ffffff;
+    font-weight: 500;
+    text-align: center;
   }
 `;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import AuthBackground from "../components/AuthBackground";
 import Header from '../components/Header';
 import { firebaseAuth } from '../utils/firebase-config';
@@ -8,25 +8,60 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
+    setError("");
   };
 
-  // Attempt login using Firebase auth
   const handleLogin = async () => {
+    setError("");
+    const { email, password } = formValues;
+  
+    if (!email || !password) {
+      setError("Please fill in both fields.");
+      return;
+    }
+  
+    setLoading(true);
     try {
-      const { email, password } = formValues;
       await signInWithEmailAndPassword(firebaseAuth, email, password);
-      // Redirect is now handled by <PublicRoute />
+      setSuccessMessage("Successfully logged in.");
+      
+      // Wait 2 seconds, then stop loading and navigate
+      setTimeout(() => {
+        setLoading(false);      // hide spinner
+        navigate("/home");      // Then navigate
+      }, 2000);
+      
     } catch (error) {
       console.error("Login failed:", error.message);
-      // You could display an error message here
+      if (
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password"
+      ) {
+        setError("Incorrect email or password.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+      setLoading(false); 
     }
   };
+
+  if (loading) {
+    return (
+      <SpinnerWrapper>
+        <div className="spinner" />
+        {successMessage && <p className="message">{successMessage}</p>}
+      </SpinnerWrapper>
+    );
+  }
 
   return (
     <Container>
@@ -56,6 +91,7 @@ export default function Login() {
               value={formValues.password}
               onChange={handleInputChange}
             />
+            {error && <p className="error-text">{error}</p>}
             <button onClick={handleLogin}>Login</button>
             <div className="or-text">or</div>
             <button className="login-button" onClick={() => navigate('/signup')}>
@@ -67,6 +103,39 @@ export default function Login() {
     </Container>
   );
 }
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const SpinnerWrapper = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .spinner {
+    border: 6px solid rgba(255, 255, 255, 0.2);
+    border-top: 6px solid #09e540;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: ${spin} 1s linear infinite;
+  }
+
+  .message {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 500;
+    text-align: center;
+  }
+`;
 
 const Container = styled.div`
   position: relative;
@@ -149,6 +218,13 @@ const Container = styled.div`
       }
     }
 
+    .error-text {
+      color: #ff6b6b;
+      font-size: 0.9rem;
+      text-align: left;
+      margin: -0.5rem 0 0;
+    }
+
     button {
       padding: 0.75rem;
       font-size: 1rem;
@@ -190,3 +266,4 @@ const Container = styled.div`
     }
   }
 `;
+

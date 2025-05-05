@@ -2,35 +2,47 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import BackgroundImage from "../components/HomeBackground";
-import CardSlider from "../components/CardSlider";
+import Card from "../components/Card"; 
 import styled from "styled-components";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [spotlight, setSpotlight] = useState([]);
-  const [trending, setTrending] = useState([]);
-  const [latest, setLatest] = useState([]);
+
+  const [mostPopular, setMostPopular] = useState([]);
   const [top10Day, setTop10Day] = useState([]);
+  const [latest, setLatest] = useState([]);
 
   useEffect(() => {
     axios
       .get("http://localhost:3001/aniwatchtv")
       .then((res) => {
-        setSpotlight(res.data.spotLightAnimes || []);
-        setTrending(res.data.trendingAnimes || []);
-        setLatest(res.data.latestEpisodes || []);
-        setTop10Day(res.data.top10Animes?.day || []);
+        const mostPopular = res.data.featuredAnimes?.mostPopularAnimes || [];
+        const top10 = res.data.top10Animes?.day || [];
+        const latestEpisodes = res.data.latestEpisodes || [];
+
+        setMostPopular(mostPopular);
+        setTop10Day(top10);
+        setLatest(latestEpisodes);
       })
       .catch((err) => {
-        console.error("Failed to fetch anime:", err.message);
+        console.error("Failed to fetch home data:", err.message);
       });
   }, []);
 
+  const renderGrid = (title, data) => (
+    <Section>
+      <h2>{title}</h2>
+      <Grid>
+        {data.map((anime, index) => (
+          <Card key={anime.id || index} anime={anime} />
+        ))}
+      </Grid>
+    </Section>
+  );
+
   return (
-    <>
+    <PageWrapper>
       <Navbar />
-      <BackgroundImage />
       <Container>
         <FilterRow>
           <FilterButton onClick={() => navigate("/origin/japan")} $bg="#e91e63">
@@ -41,12 +53,12 @@ export default function Home() {
           </FilterButton>
         </FilterRow>
 
-        {top10Day.length > 0 && <CardSlider title="Top 10 (Today)" data={top10Day} />}
-        {spotlight.length > 0 && <CardSlider title="Spotlight" data={spotlight} />}
-        {trending.length > 0 && <CardSlider title="Trending" data={trending} />}
+        {top10Day.length > 0 && renderGrid("Top 10 (Today)", top10Day)}
+        {mostPopular.length > 0 && renderGrid("Most Popular", mostPopular)}
+
         {latest.length > 0 && (
           <>
-            <CardSlider title="Latest Episodes" data={latest} />
+            {renderGrid("Latest Episodes", latest)}
             <ViewMoreWrapper>
               <ViewMoreButton onClick={() => navigate("/latest")}>
                 View More
@@ -55,9 +67,15 @@ export default function Home() {
           </>
         )}
       </Container>
-    </>
+    </PageWrapper>
   );
 }
+
+// STYLES
+const PageWrapper = styled.div`
+  background-color: #0d0d0d;
+  min-height: 100vh;
+`;
 
 const Container = styled.div`
   padding: 2rem 0;
@@ -79,6 +97,17 @@ const FilterButton = styled.button`
   cursor: pointer;
   color: #fff;
   background-color: ${({ $bg }) => $bg || "#555"};
+`;
+
+const Section = styled.div`
+  margin: 2rem 2rem 0;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 `;
 
 const ViewMoreWrapper = styled.div`

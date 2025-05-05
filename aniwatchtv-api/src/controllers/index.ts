@@ -8,7 +8,6 @@ import { getEpisodeStreamingSourceInfo } from "./getEpisodeStreamingSource";
 import { getAtoZAnimeList } from "./getAtoZAnimeList";
 import { getLatestEpisodes } from "./getLatestEpisodes";
 
-
 // This index file gathers and re-exports all the controller functions
 // so they can be easily imported from a single location.
 // Instead of importing each function from its own file,
@@ -28,6 +27,5 @@ export {
   getEpisodeServersInfo,
   getEpisodeStreamingSourceInfo,
   getAtoZAnimeList,
-  getLatestEpisodes, 
-
+  getLatestEpisodes,
 };

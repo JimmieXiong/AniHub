@@ -5,7 +5,7 @@ import { MinimalAnime } from "../types/animeTypes";
 
 export const extractFeaturedAnimes = (
   $: CheerioAPI,
-  selectors: SelectorType,
+  selectors: SelectorType
 ): MinimalAnime[] => {
   try {
     const animes: MinimalAnime[] = [];
@@ -17,11 +17,13 @@ export const extractFeaturedAnimes = (
           ?.attr("href")
           ?.slice(1)
           ?.trim() || null;
+
       const animeNAME =
         $(element)
           .find(".film-detail .film-name .dynamic-name")
           ?.text()
           ?.trim() ?? "UNKNOWN ANIME";
+
       const animeIMG =
         $(element)
           .find(".film-poster a .film-poster-img")
@@ -34,16 +36,14 @@ export const extractFeaturedAnimes = (
         img: animeIMG,
       });
     });
+
     return animes.slice(0, 5);
   } catch (err) {
-    /////////////////////////////////////////////////////////////////////////
-    console.error("Error in extract_featured_animes :", err); // for TESTING//
-    /////////////////////////////////////////////////////////////////////////
-
+    console.error("Error in extractFeaturedAnimes:", err);
     if (err instanceof AxiosError) {
       throw createHttpError(
         err?.response?.status || 500,
-        err?.response?.statusText || "Something went wrong",
+        err?.response?.statusText || "Something went wrong"
       );
     } else {
       throw createHttpError.InternalServerError("Internal server error");

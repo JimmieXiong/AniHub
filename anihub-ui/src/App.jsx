@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Pages
 import Login from "./pages/Login";
@@ -7,9 +7,15 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Movies from "./pages/Movies";
-import TVShows from "./pages/TVShows";
+import LatestEpisodes from "./pages/LatestEpisodes"; 
 import OriginAnime from "./pages/OriginAnime";
-import LatestEpisodes from "./pages/LatestEpisodes"; // ✅ NEW
+import MyList from "./pages/MyList";
+import WatchEpisode from "./pages/WatchEpisode";
+import AnimeDetails from "./pages/AnimeDetails";
+import Profile from "./pages/Profile";
+import ChangeAccount from "./pages/ChangeAccount";
+import Subscribe from "./pages/Subscribe";
+import Subscribed from "./pages/Subscribed";
 
 // Route Guards
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -19,7 +25,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ Public Routes */}
+        {/* Public Routes */}
         <Route
           path="/login"
           element={
@@ -36,8 +42,10 @@ export default function App() {
             </PublicRoute>
           }
         />
+        <Route path="/subscribe" element={<Subscribe />} />
+        <Route path="/subscribed" element={<Subscribed />} />
 
-        {/* ✅ Protected Routes */}
+        {/* Protected Routes */}
         <Route
           path="/home"
           element={
@@ -66,7 +74,7 @@ export default function App() {
           path="/tv"
           element={
             <ProtectedRoute>
-              <TVShows />
+              <LatestEpisodes /> 
             </ProtectedRoute>
           }
         />
@@ -86,6 +94,49 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/mylist"
+          element={
+            <ProtectedRoute>
+              <MyList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watch/:episodeId"
+          element={
+            <ProtectedRoute>
+              <WatchEpisode />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/anime/:animeId"
+          element={
+            <ProtectedRoute>
+              <AnimeDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-account"
+          element={
+            <ProtectedRoute>
+              <ChangeAccount />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch-All Redirect */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

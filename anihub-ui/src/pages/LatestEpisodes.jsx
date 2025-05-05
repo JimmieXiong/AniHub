@@ -1,138 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import BackgroundImage from "../components/HomeBackground";
-
-export default function LatestEpisodes() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const pageParam = parseInt(searchParams.get("page")) || 1;
-
-  const [episodes, setEpisodes] = useState([]);
-  const [page, setPage] = useState(pageParam);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setPage(pageParam);
-  }, [pageParam]);
-
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`http://localhost:3001/aniwatchtv/latest?page=${pageParam}`)
-      .then((res) => {
-        const { animes = [], totalPages = 1 } = res.data;
-        setEpisodes(animes);
-        setTotalPages(totalPages);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch latest episodes:", err.message);
-        setError("Failed to load episodes. Try again later.");
-        setLoading(false);
-      });
-  }, [pageParam]);
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setSearchParams({ page: newPage });
-    }
-  };
-
-  const getVisiblePages = () => {
-    const maxVisible = 5;
-    let start = Math.max(1, page - Math.floor(maxVisible / 2));
-    let end = start + maxVisible - 1;
-    if (end > totalPages) {
-      end = totalPages;
-      start = Math.max(1, end - maxVisible + 1);
-    }
-    return [...Array(end - start + 1).keys()].map((i) => start + i);
-  };
-
-  return (
-    <>
-      <Navbar />
-      <BackgroundImage />
-      <div style={styles.container}>
-        <h1 style={styles.heading}>Latest Episode Updates</h1>
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>{error}</p>
-        ) : episodes.length === 0 ? (
-          <p>No episodes found.</p>
-        ) : (
-          <>
-            <div style={styles.grid}>
-              {episodes.map((anime, index) => (
-                <div key={anime.id || index} style={styles.card}>
-                  <div style={styles.imageWrapper}>
-                    <img
-                      src={anime.img || anime.image}
-                      alt={anime.name || anime.title}
-                      style={styles.image}
-                    />
-                    <div style={styles.titleOverlay}>
-                      <h3 style={styles.title}>
-                        {anime.name?.trim() || anime.title?.trim() || "Untitled"}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={styles.pagination}>
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                style={styles.pageButton}
-              >
-                ‹
-              </button>
-
-              {getVisiblePages().map((pg) => (
-                <button
-                  key={pg}
-                  onClick={() => handlePageChange(pg)}
-                  style={{
-                    ...styles.pageButton,
-                    ...(pg === page ? styles.activePageButton : {}),
-                  }}
-                >
-                  {pg}
-                </button>
-              ))}
-
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-                style={styles.pageButton}
-              >
-                ›
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </>
-  );
-}
 
 const styles = {
+  wrapper: {
+    backgroundColor: "#0d0d0d",
+    minHeight: "100vh",
+  },
   container: {
     padding: "2rem",
     fontFamily: "sans-serif",
     position: "relative",
     zIndex: 2,
     color: "#fff",
+    maxWidth: "1200px",
+    margin: "0 auto",
   },
   heading: {
     marginBottom: "1.5rem",
+    fontSize: "2rem",
+    textAlign: "center",
   },
   grid: {
     display: "grid",
@@ -181,6 +69,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     gap: "0.5rem",
+    flexWrap: "wrap",
   },
   pageButton: {
     padding: "0.5rem 1rem",
@@ -199,3 +88,156 @@ const styles = {
     fontWeight: "bold",
   },
 };
+
+export default function LatestEpisodes() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+
+  const [episodes, setEpisodes] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!searchParams.get("page")) {
+      setSearchParams({ page: "1" });
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const fetchEpisodes = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await axios.get(
+          `http://localhost:3001/aniwatchtv/latest?page=${pageParam}`
+        );
+        const { latestEpisodes = [], totalPages = 1 } = res.data;
+
+        setEpisodes(latestEpisodes);
+        setTotalPages(totalPages);
+        console.log("Fetched episodes:", latestEpisodes);
+      } catch (err) {
+        console.error("Failed to fetch latest episodes:", err.message);
+        setError("Failed to load episodes. Try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEpisodes();
+  }, [pageParam]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setSearchParams({ page: newPage.toString() });
+    }
+  };
+
+  const getVisiblePages = () => {
+    const maxVisible = 5;
+    let start = Math.max(1, pageParam - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    return [...Array(end - start + 1).keys()].map((i) => start + i);
+  };
+
+  return (
+    <div style={styles.wrapper}>
+      <Navbar />
+      <div style={styles.container}>
+        <h1 style={styles.heading}>Latest Episode Updates</h1>
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : episodes.length === 0 ? (
+          <p>No episodes found.</p>
+        ) : (
+          <>
+            <div style={styles.grid}>
+              {episodes.map((anime, index) => {
+                const animeId = anime.id || anime.animeId || anime.slug;
+                const title = anime.name?.trim() || anime.title?.trim() || "Untitled";
+                const image = anime.img || anime.image;
+
+                console.log("Anime debug:", { anime, animeId });
+
+                return (
+                  <Link
+                    key={animeId || index}
+                    to={`/anime/${animeId}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <div style={styles.card}>
+                      <div style={styles.imageWrapper}>
+                        <img
+                          src={image}
+                          alt={`Poster of ${title}`}
+                          style={styles.image}
+                        />
+                        <div style={styles.titleOverlay}>
+                          <h3 style={styles.title}>{title}</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div style={styles.pagination}>
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={pageParam === 1}
+                style={styles.pageButton}
+              >
+                «
+              </button>
+              <button
+                onClick={() => handlePageChange(pageParam - 1)}
+                disabled={pageParam === 1}
+                style={styles.pageButton}
+              >
+                ‹
+              </button>
+
+              {getVisiblePages().map((pg) => (
+                <button
+                  key={pg}
+                  onClick={() => handlePageChange(pg)}
+                  style={{
+                    ...styles.pageButton,
+                    ...(pg === pageParam ? styles.activePageButton : {}),
+                  }}
+                >
+                  {pg}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(pageParam + 1)}
+                disabled={pageParam === totalPages}
+                style={styles.pageButton}
+              >
+                ›
+              </button>
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={pageParam === totalPages}
+                style={styles.pageButton}
+              >
+                »
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
