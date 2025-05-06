@@ -20,7 +20,7 @@ const getCategoryPageInfo: RequestHandler = async (req, res) => {
     const data = await scrapeAnimeCategories(category, page);
     res.status(200).json(data);
   } catch (error) {
-    console.error("❌ Error in getCategoryPageInfo:", error);
+    console.error("Error in getCategoryPageInfo:", error);
     res.status(500).json({ error: "Failed to fetch category page" });
   }
 };

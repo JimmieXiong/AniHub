@@ -12,9 +12,7 @@ export const extractSearchedAnimes = (
 
     return animes;
   } catch (err) {
-    ////////////////////////////////////////////////////////////////
-    console.error("Error in extract_searched_animes :", err); // for TESTING//
-    ////////////////////////////////////////////////////////////////
+    console.error("Error in extract_searched_animes :", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

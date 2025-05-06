@@ -14,9 +14,7 @@ export const extractGenreList = (
     });
     return genres;
   } catch (err) {
-    ///////////////////////////////////////////////////////////////////
-    console.error("Error in extract_genre_list :", err); // for TESTING//
-    ///////////////////////////////////////////////////////////////////
+    console.error("Error in extract_genre_list :", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

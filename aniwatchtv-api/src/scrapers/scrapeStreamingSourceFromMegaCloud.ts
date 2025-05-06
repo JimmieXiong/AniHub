@@ -20,7 +20,7 @@ export const scrapeStreamingSourceFromMegaCloud = async (
   }
 
   const episodeWatchUrl = new URL(`/watch/${episodeIdOrUrl}`, aniwatchUrls.BASE).href;
-  console.log("🔗 Episode Page URL:", episodeWatchUrl);
+  console.log("Episode Page URL:", episodeWatchUrl);
 
   try {
     // Step 1: Get episode servers HTML
@@ -29,7 +29,7 @@ export const scrapeStreamingSourceFromMegaCloud = async (
       `${aniwatchUrls.AJAX}/v2/episode/servers?episodeId=${episodeId}`,
       {
         headers: {
-          ...headers, // ✅ using the imported headers
+          ...headers, 
           Referer: episodeWatchUrl,
           "X-Requested-With": "XMLHttpRequest",
         },
@@ -44,19 +44,19 @@ export const scrapeStreamingSourceFromMegaCloud = async (
       throw createHttpError.NotFound("Couldn't find streaming server for this episode.");
     }
 
-    console.log("✅ Server ID:", serverId);
+    console.log("Server ID:", serverId);
 
     // Step 3: Get streaming URL using the server ID
     const {
       data: { link: streamingUrl },
     } = await axios.get(`${aniwatchUrls.AJAX}/v2/episode/sources?id=${serverId}`);
 
-    console.log("🎥 Streaming Link:", streamingUrl);
+    console.log("Streaming Link:", streamingUrl);
 
     // Use MegaCloud on the resolved link
     return await new MegaCloud().extract2(new URL(streamingUrl));
   } catch (err: any) {
-    console.error("❌ Error in scrapeStreamingSourceFromMegaCloud:", err);
+    console.error("Error in scrapeStreamingSourceFromMegaCloud:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

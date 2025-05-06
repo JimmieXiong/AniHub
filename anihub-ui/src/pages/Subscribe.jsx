@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import Navbar from "../components/Navbar";
-import { getAuth } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { firestore } from "../utils/firebase-config";
-import { useNavigate } from "react-router-dom";
+import styled from "styled-components"; 
+import axios from "axios"; 
+import Navbar from "../components/Navbar"; 
+import { getAuth } from "firebase/auth"; 
+import { doc, getDoc } from "firebase/firestore"; 
+import { firestore } from "../utils/firebase-config"; 
 
 export default function Subscribe() {
-  const navigate = useNavigate();
+
+  // determine if user is already a premium member
   const [alreadyPremium, setAlreadyPremium] = useState(false);
 
+  // On component mount, check if the logged-in user is already premium
   useEffect(() => {
     const checkIfPremium = async () => {
       const user = getAuth().currentUser;
       if (!user) return;
 
+      // Get the user's document from Firestore
       const docRef = doc(firestore, "users", user.uid);
       const docSnap = await getDoc(docRef);
+      
+      // If user is premium, update the state
       if (docSnap.exists() && docSnap.data().isPremium) {
         setAlreadyPremium(true);
       }
@@ -26,15 +30,21 @@ export default function Subscribe() {
     checkIfPremium();
   }, []);
 
+  // Handles when the user clicks "Subscribe" on a plan
   const handleSubscribe = async (plan) => {
     const user = getAuth().currentUser;
+
+    // Guard clause for unauthenticated users
     if (!user) return alert("Please log in first");
 
     try {
+      // Send subscription plan request to backend (Stripe session)
       const res = await axios.post("http://localhost:3002/create-checkout-session", {
         uid: user.uid,
         plan,
       });
+
+      // Redirect user to Stripe checkout
       window.location.href = res.data.url;
     } catch (err) {
       console.error(err);
@@ -44,17 +54,23 @@ export default function Subscribe() {
 
   return (
     <Wrapper>
-      <Navbar />
+      <Navbar /> 
       <Container>
         <Content>
           <h1>Unlock AniHub Premium</h1>
+
+
           {alreadyPremium && (
             <PremiumNotice>
-              🎉 You're already a premium member! You can still change or renew your plan below.
+              You're already a premium member! You can still change or renew your plan below.
             </PremiumNotice>
           )}
+
           <p>Stream unlimited Donghua & Anime in HD with no ads. Choose your path below!</p>
+
+          {/* Plan options */}
           <Plans>
+            {/* Monthly Plan */}
             <PlanCard>
               <h2>Monthly Plan</h2>
               <Price>$18/month</Price>
@@ -66,6 +82,7 @@ export default function Subscribe() {
               <button onClick={() => handleSubscribe("monthly")}>Subscribe Monthly</button>
             </PlanCard>
 
+            {/* Yearly Plan */}
             <PlanCard>
               <h2>Yearly Plan</h2>
               <Price>$250/year</Price>
@@ -82,7 +99,6 @@ export default function Subscribe() {
     </Wrapper>
   );
 }
-
 
 const Wrapper = styled.div`
   background-color: #0d0d0d;
@@ -170,6 +186,7 @@ const Price = styled.div`
   color: #ffe600;
   margin-bottom: 0.75rem;
 `;
+
 const PremiumNotice = styled.div`
   background-color: #292929;
   color: #ffe600;

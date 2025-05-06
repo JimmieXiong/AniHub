@@ -1,41 +1,46 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
-import { signOut } from "firebase/auth";
 import { FaPowerOff, FaUserCircle } from "react-icons/fa";
+import { signOut } from "firebase/auth";
 import { firebaseAuth } from "../utils/firebase-config";
 import logo from "../assets/Logo.png";
 
 export default function Navbar({ isScrolled }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");         // Search input state
+  const [dropdownOpen, setDropdownOpen] = useState(false);  // Toggle profile dropdown
+  const dropdownRef = useRef(null);                         // Ref for detecting outside clicks
+  const navigate = useNavigate();                           
 
+  // Handle search form submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-      setSearchTerm("");
+      setSearchTerm(""); // Clear search after navigating
     }
   };
 
+  // Close dropdown if clicked outside of profile icon
   const handleClickOutside = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
       setDropdownOpen(false);
     }
   };
 
+  // Navigate to a route and close dropdown
   const handleNav = (path) => {
     setDropdownOpen(false);
     navigate(path);
   };
 
+  // Add/remove outside click listener
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Navigation links to display
   const links = [
     { name: "Home", link: "/home" },
     { name: "Latest", link: "/tv" },
@@ -43,9 +48,12 @@ export default function Navbar({ isScrolled }) {
     { name: "My List", link: "/mylist" },
   ];
 
+
+  // ui
   return (
     <Container className={`${isScrolled ? "scrolled" : ""}`}>
       <NavContent>
+        {/* Left Side: Logo + Navigation Links */}
         <Left>
           <Logo>
             <img src={logo} alt="AniHub Logo" />
@@ -59,6 +67,7 @@ export default function Navbar({ isScrolled }) {
           </NavLinks>
         </Left>
 
+        {/* Center: Search Bar */}
         <form onSubmit={handleSearchSubmit}>
           <SearchInput
             type="text"
@@ -68,7 +77,9 @@ export default function Navbar({ isScrolled }) {
           />
         </form>
 
+        {/* Right Side: Profile + Logout */}
         <div className="right-section">
+          {/* Profile Dropdown */}
           <ProfileWrapper ref={dropdownRef}>
             <ProfileIcon
               onClick={() => setDropdownOpen((prev) => !prev)}
@@ -85,6 +96,7 @@ export default function Navbar({ isScrolled }) {
             )}
           </ProfileWrapper>
 
+          {/* Logout Button */}
           <PowerButton
             onClick={() => {
               signOut(firebaseAuth)
@@ -101,11 +113,11 @@ export default function Navbar({ isScrolled }) {
   );
 }
 
-// Styled Components
 
+// Full navbar container
 const Container = styled.nav`
   width: 100%;
-  background: rgba(40, 40, 40, 0.65);
+  background: rgba(40, 40, 40, 0.65); // translucent dark background
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
@@ -113,6 +125,7 @@ const Container = styled.nav`
   font-family: 'Poppins', sans-serif;
 `;
 
+// Inner wrapper to align logo, links, search, and user icons
 const NavContent = styled.div`
   max-width: 1300px;
   margin: 0 auto;
@@ -136,6 +149,7 @@ const NavContent = styled.div`
   }
 `;
 
+// Logo and nav links area
 const Left = styled.div`
   display: flex;
   align-items: center;
@@ -149,6 +163,7 @@ const Logo = styled.div`
   }
 `;
 
+// Navigation links
 const NavLinks = styled.ul`
   list-style: none;
   display: flex;
@@ -173,6 +188,7 @@ const NavLinks = styled.ul`
   }
 `;
 
+// Search input field
 const SearchInput = styled.input`
   width: 100%;
   max-width: 340px;
@@ -194,10 +210,12 @@ const SearchInput = styled.input`
   }
 `;
 
+// Profile button wrapper
 const ProfileWrapper = styled.div`
   position: relative;
 `;
 
+// Profile icon 
 const ProfileIcon = styled.button`
   background: transparent;
   border: none;
@@ -214,6 +232,7 @@ const ProfileIcon = styled.button`
   }
 `;
 
+// Dropdown menu under profile
 const DropdownMenu = styled.div`
   position: absolute;
   top: 2.5rem;
@@ -241,6 +260,7 @@ const DropdownMenu = styled.div`
   }
 `;
 
+// Logout icon
 const PowerButton = styled.button`
   background: transparent;
   border: none;

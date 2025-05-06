@@ -52,9 +52,7 @@ export const extractTopUpcomingAnimes = (
     });
     return animes;
   } catch (err) {
-    ////////////////////////////////////////////////////////////////
-    console.error("Error in extract_top_upcoming_animes :", err); // for TESTING//
-    ////////////////////////////////////////////////////////////////
+    console.error("Error in extract_top_upcoming_animes :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

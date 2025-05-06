@@ -7,7 +7,7 @@ export const getHomePageInfo: RequestHandler = async (_req, res) => {
     const data = await scrapeHomePage();
     res.status(200).json(data);
   } catch (error) {
-    console.error("❌ Error in getHomePageInfo:", error);
+    console.error("Error in getHomePageInfo:", error);
     res.status(500).json({ error: "Failed to load homepage content" });
   }
 };

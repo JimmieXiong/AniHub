@@ -19,7 +19,7 @@ import {
   Top10AnimeTimePeriod,
 } from "../types/animeTypes";
 
-import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes"; // ✅ replace URL_fn
+import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes"; 
 
 export const scrapeHomePage = async (): Promise<ScrapedHomePage | HttpError> => {
   const result: ScrapedHomePage = {
@@ -41,7 +41,7 @@ export const scrapeHomePage = async (): Promise<ScrapedHomePage | HttpError> => 
     genres: [],
   };
 
-  const URLs = await getAniWatchTVUrls(); // ✅ fixed
+  const URLs = await getAniWatchTVUrls();
 
   try {
     const mainPage = await axios.get(URLs.HOME, {
@@ -84,7 +84,7 @@ export const scrapeHomePage = async (): Promise<ScrapedHomePage | HttpError> => 
 
     return result;
   } catch (err) {
-    console.error("❌ Error in scrapeHomePage:", err);
+    console.error("Error in scrapeHomePage:", err);
     if (err instanceof AxiosError) {
       throw createHttpError(
         err?.response?.status || 500,

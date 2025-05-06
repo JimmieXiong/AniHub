@@ -36,12 +36,12 @@ export const scrapeTrendingAnimes = async (): Promise<MinimalAnime[]> => {
       }
     });
 
-    console.log(`✅ Trending (${animes.length}):`);
+    console.log(`Trending (${animes.length}):`);
     animes.forEach((a, i) => console.log(`${i + 1}. ${a.name} (${a.id})`));
 
     return animes;
   } catch (err) {
-    console.error("❌ Error scraping trending:", err);
+    console.error("Error scraping trending:", err);
     if (err instanceof AxiosError) {
       throw createHttpError(
         err.response?.status || 500,

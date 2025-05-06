@@ -16,9 +16,7 @@ export const extractRecommendedAnimes = (
 
     return animes;
   } catch (err) {
-    ////////////////////////////////////////////////////////////////
-    console.error("Error in extract_recommended_animes :", err); // for TESTING//
-    ////////////////////////////////////////////////////////////////
+    console.error("Error in extract_recommended_animes :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

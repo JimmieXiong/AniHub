@@ -69,9 +69,8 @@ export const extractRelatedAnimes = (
     });
     return animes;
   } catch (err) {
-    ///////////////////////////////////////////////////////////////////////////
-    console.error("Error in extract_related_animes :", err); // for TESTING//
-    ///////////////////////////////////////////////////////////////////////////
+    console.error("Error in extract_related_animes :", err); 
+    
 
     if (err instanceof AxiosError) {
       throw createHttpError(

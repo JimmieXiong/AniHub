@@ -1,5 +1,5 @@
 import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
-import { headers } from "../config/headers"; // ✅ fixed
+import { headers } from "../config/headers";
 import axios, { AxiosError } from "axios";
 import { load, type CheerioAPI } from "cheerio";
 import createHttpError from "http-errors";
@@ -52,7 +52,7 @@ export const scrapeAnimeDetails = async (
     const url = new URL(id, BASE).toString();
 
     const response = await axios.get(url, {
-      headers: headers, // ✅ fixed
+      headers: headers,
     });
 
     const $: CheerioAPI = load(response.data);
@@ -86,7 +86,7 @@ export const scrapeAnimeDetails = async (
 
     return result;
   } catch (err) {
-    console.error("❌ Error in scrapeAnimeDetails:", err);
+    console.error("Error in scrapeAnimeDetails:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

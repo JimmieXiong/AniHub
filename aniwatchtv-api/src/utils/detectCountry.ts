@@ -1,4 +1,3 @@
-// src/utils/aniwatch/detectCountry.ts
 
 export function detectCountry(studios: string[]): 'Japan' | 'China' | 'Unknown' {
     const studioNames = studios.map(s => s.toLowerCase());

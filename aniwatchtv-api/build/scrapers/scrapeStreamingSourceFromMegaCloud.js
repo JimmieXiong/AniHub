@@ -62,7 +62,7 @@ const scrapeStreamingSourceFromMegaCloud = (episodeIdOrUrl_1, ...args_1) => __aw
         return yield new megacloud_1.default().extract2(directUrl);
     }
     const episodeWatchUrl = new URL(`/watch/${episodeIdOrUrl}`, aniwatchUrls.BASE).href;
-    console.log("🔗 Episode Page URL:", episodeWatchUrl);
+    console.log("Episode Page URL:", episodeWatchUrl);
     try {
         // Step 1: Get episode servers HTML
         const { data } = yield axios_1.default.get(`${aniwatchUrls.AJAX}/v2/episode/servers?episodeId=${episodeWatchUrl.split("?ep=")[1]}`, {

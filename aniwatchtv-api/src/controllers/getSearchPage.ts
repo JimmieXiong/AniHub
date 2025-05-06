@@ -1,4 +1,4 @@
-import { scrapeAnimeSearchResults } from "../scrapers"; // ✅ Correct relative path
+import { scrapeAnimeSearchResults } from "../scrapers"; 
 import createHttpError from "http-errors";
 import type { RequestHandler } from "express";
 
@@ -19,8 +19,8 @@ const getSearchPageInfo: RequestHandler = async (req, res) => {
     const data = await scrapeAnimeSearchResults(keyword, page);
     res.status(200).json(data);
   } catch (err) {
-    console.error("❌ Error in getSearchPageInfo:", err); // more descriptive
-    res.status(500).json({ error: "Failed to fetch search results" }); // ✅ return a response
+    console.error("Error in getSearchPageInfo:", err); 
+    res.status(500).json({ error: "Failed to fetch search results" });
   }
 };
 

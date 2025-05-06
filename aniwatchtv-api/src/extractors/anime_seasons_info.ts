@@ -34,9 +34,7 @@ export const extractAnimeSeasonsInfo = (
     });
     return seasons;
   } catch (err) {
-    ///////////////////////////////////////////////////////////////////
-    console.error("Error in extract_anime_seasons_info :", err); // for TESTING//
-    ///////////////////////////////////////////////////////////////////
+    console.error("Error in extract_anime_seasons_info :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

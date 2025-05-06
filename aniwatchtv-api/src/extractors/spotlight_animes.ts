@@ -71,9 +71,7 @@ export const extractSpotlightAnimes = (
 
     return animes;
   } catch (err) {
-    ////////////////////////////////////////////////////////////////////////
-    console.error("Error in extract_spotlight_animes :", err); // for TESTING//
-    ////////////////////////////////////////////////////////////////////////
+    console.error("Error in extract_spotlight_animes :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

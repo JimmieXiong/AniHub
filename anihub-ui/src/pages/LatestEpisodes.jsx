@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 
+// Inline styling object for the component
 const styles = {
   wrapper: {
     backgroundColor: "#0d0d0d",
@@ -90,20 +91,24 @@ const styles = {
 };
 
 export default function LatestEpisodes() {
+  // Access URL query parameter "page" (or default to 1)
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
 
+  // State for episodes data, pagination, loading, and error
   const [episodes, setEpisodes] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Ensure the URL always has a "page" param to prevent undefined state
   useEffect(() => {
     if (!searchParams.get("page")) {
       setSearchParams({ page: "1" });
     }
   }, [searchParams, setSearchParams]);
 
+  // Fetch latest episodes when the current page changes
   useEffect(() => {
     const fetchEpisodes = async () => {
       try {
@@ -113,6 +118,7 @@ export default function LatestEpisodes() {
         const res = await axios.get(
           `http://localhost:3001/aniwatchtv/latest?page=${pageParam}`
         );
+
         const { latestEpisodes = [], totalPages = 1 } = res.data;
 
         setEpisodes(latestEpisodes);
@@ -129,12 +135,14 @@ export default function LatestEpisodes() {
     fetchEpisodes();
   }, [pageParam]);
 
+  // Handler to update the page number in the URL
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setSearchParams({ page: newPage.toString() });
     }
   };
 
+  // Calculates visible page buttons for pagination
   const getVisiblePages = () => {
     const maxVisible = 5;
     let start = Math.max(1, pageParam - Math.floor(maxVisible / 2));
@@ -146,12 +154,14 @@ export default function LatestEpisodes() {
     return [...Array(end - start + 1).keys()].map((i) => start + i);
   };
 
+  // Render
   return (
     <div style={styles.wrapper}>
       <Navbar />
       <div style={styles.container}>
         <h1 style={styles.heading}>Latest Episode Updates</h1>
 
+        {/* Conditional rendering: show loading, error, or data */}
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -160,6 +170,7 @@ export default function LatestEpisodes() {
           <p>No episodes found.</p>
         ) : (
           <>
+            {/* Episode Grid */}
             <div style={styles.grid}>
               {episodes.map((anime, index) => {
                 const animeId = anime.id || anime.animeId || anime.slug;
@@ -191,6 +202,7 @@ export default function LatestEpisodes() {
               })}
             </div>
 
+            {/* Pagination Controls */}
             <div style={styles.pagination}>
               <button
                 onClick={() => handlePageChange(1)}

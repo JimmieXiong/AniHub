@@ -52,7 +52,7 @@ export const scrapeLatestUpdated = async (page = 1): Promise<{
 
     return { episodes: animeList, totalPages };
   } catch (err) {
-    console.error("❌ scrapeLatestUpdated FAILED:", err);
+    console.error("scrapeLatestUpdated FAILED:", err);
     throw err;
   }
 };

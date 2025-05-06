@@ -8,18 +8,26 @@ import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 
 export default function Profile() {
+  // to store authenticated user info
   const [user, setUser] = useState(null);
+  // check if user is a premium subscriber
   const [isPremium, setIsPremium] = useState(false);
+  //  for subscription start and end dates
   const [subscribedAt, setSubscribedAt] = useState(null);
   const [subscriptionEnds, setSubscriptionEnds] = useState(null);
 
+  // listen to auth state changes and fetch user data
   useEffect(() => {
+    // Firebase auth listener
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+
+        // Get user document from Firestore
         const docRef = doc(firestore, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
 
+        // If document exists, set premium and subscription date states
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.isPremium) setIsPremium(true);
@@ -33,6 +41,7 @@ export default function Profile() {
       }
     });
 
+    // Clean up the listener when component unmounts
     return () => unsubscribe();
   }, []);
 
@@ -41,12 +50,15 @@ export default function Profile() {
       <Navbar />
       <Container>
         <h1>My Profile</h1>
+
         {user ? (
           <ProfileBox>
             <p><strong>Username:</strong> {user.displayName || "N/A"}</p>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Subscription:</strong> {isPremium ? "Premium" : "Free"}</p>
             <p><strong>Joined:</strong> {new Date(user.metadata?.creationTime).toLocaleDateString()}</p>
+
+            {/* Show subscription dates if premium */}
             {isPremium && (
               <>
                 <p><strong>Subscribed At:</strong> {subscribedAt ? subscribedAt.toLocaleDateString() : "N/A"}</p>
@@ -54,12 +66,13 @@ export default function Profile() {
               </>
             )}
 
-            {/*Change Account Settings button */}
+            {/* Link to change account settings */}
             <Link to="/change-account">
               <SettingsButton>Change Account Settings</SettingsButton>
             </Link>
           </ProfileBox>
         ) : (
+          // Fallback loading message
           <p style={{ textAlign: "center" }}>Loading user info...</p>
         )}
       </Container>

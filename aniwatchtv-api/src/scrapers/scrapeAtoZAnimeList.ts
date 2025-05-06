@@ -16,18 +16,18 @@ export const scrapeAtoZAnimeList = async (page: number): Promise<Anime[] | HttpE
     const pageUrl = new URL(`az-list/?page=${page}`, BASE).toString();
 
     const response = await axios.get(pageUrl, {
-      headers, // ✅ use static/randomized headers
+      headers, 
     });
 
     const $: CheerioAPI = load(response.data);
 
     const selector: SelectorType = ".film_list-wrap .flw-item";
-    console.log("✅ Elements matched:", $(selector).length);
-    console.log("🧾 HTML preview:", response.data.slice(0, 500)); // optional
+    console.log("Elements matched:", $(selector).length);
+    console.log("HTML preview:", response.data.slice(0, 500)); // optional
 
     return extractAtoZAnimes($, selector);
   } catch (err) {
-    console.error("❌ Error in scrapeAtoZAnimeList:", err);
+    console.error("Error in scrapeAtoZAnimeList:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

@@ -4,21 +4,26 @@ import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Search() {
+  // Get query (?q=) and page (?page=) from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get("q") || "";
-  const pageParam = parseInt(searchParams.get("page")) || 1;
+  const query = searchParams.get("q") || "";              // Search keyword
+  const pageParam = parseInt(searchParams.get("page")) || 1; // Page number
 
-  const [results, setResults] = useState([]);
-  const [page, setPage] = useState(pageParam);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  // State for results and pagination
+  const [results, setResults] = useState([]);   // Current search result list
+  const [page, setPage] = useState(pageParam);  // Current page
+  const [totalPages, setTotalPages] = useState(1); // Total pages available
+  const [loading, setLoading] = useState(true); 
 
+  // Sync internal page state with URL page param
   useEffect(() => {
     setPage(pageParam);
   }, [pageParam]);
 
+  // Fetch search results from the API when query or page changes
   useEffect(() => {
-    if (!query) return;
+    if (!query) return; // If query is empty, skip
+
     setLoading(true);
     axios
       .get(
@@ -27,6 +32,7 @@ export default function Search() {
         )}&page=${page}`
       )
       .then((res) => {
+        // Set results and total pages from the response
         setResults(res.data.animes || []);
         setTotalPages(res.data.totalPages || 1);
         setLoading(false);
@@ -37,6 +43,7 @@ export default function Search() {
       });
   }, [query, page]);
 
+  // Update the URL query string when page changes
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setSearchParams({ q: query, page: newPage });
@@ -55,11 +62,14 @@ export default function Search() {
           <p>No results found.</p>
         ) : (
           <>
+            {/* Anime result grid */}
             <div style={styles.grid}>
               {results.map((anime, index) => {
+                // Fallback logic to identify anime
                 const animeId = anime.id || anime.animeId || anime.slug;
                 const title =
                   anime.name?.trim() || anime.title?.trim() || "Untitled";
+
                 return (
                   <Link
                     key={`${animeId}-${index}`}
@@ -75,7 +85,9 @@ export default function Search() {
               })}
             </div>
 
+            {/* Pagination controls */}
             <div style={styles.pagination}>
+              {/* Previous page button */}
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1}
@@ -84,6 +96,7 @@ export default function Search() {
                 ‹
               </button>
 
+              {/* Show up to 5 page buttons */}
               {[...Array(totalPages).keys()].slice(0, 5).map((i) => {
                 const pg = i + 1;
                 return (
@@ -100,6 +113,7 @@ export default function Search() {
                 );
               })}
 
+              {/* Next page button */}
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages}
@@ -115,10 +129,11 @@ export default function Search() {
   );
 }
 
+
 const styles = {
   wrapper: {
     backgroundColor: "#0d0d0d",
-    minHeight: "100vh",
+    minHeight: "100vh", 
   },
   container: {
     padding: "2rem",
@@ -127,7 +142,7 @@ const styles = {
     position: "relative",
     zIndex: 2,
     maxWidth: "1200px",
-    margin: "0 auto",
+    margin: "0 auto", 
   },
   heading: {
     fontSize: "1.8rem",

@@ -4,6 +4,7 @@ import { IoPlayCircleSharp } from "react-icons/io5";
 import { AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
 import { MdClose } from "react-icons/md";
 import { Link } from "react-router-dom";
+
 import {
   addToMyList,
   removeFromMyList,
@@ -11,17 +12,24 @@ import {
 } from "../utils/firestoreUtils";
 
 export default function Card({ anime }) {
+  // Hover state showing extra info
   const [isHovered, setIsHovered] = useState(false);
+
+  // Track if the anime is in the user's My List
   const [isInList, setIsInList] = useState(false);
 
+  // fallback missing data
   const title = anime.name?.trim() || anime.title?.trim() || "Untitled";
   const image = anime.img || anime.image;
-  const animeId = anime.id || anime.slug || anime.animeId; // fallback logic
+  const animeId = anime.id || anime.slug || anime.animeId;
+
+  // Show extra info like episode number and sub/dub
   const episode =
     anime.episode && anime.episode !== "Unknown Ep" ? anime.episode : null;
   const subOrDub = anime.subOrDub || null;
   const extraInfo = [episode, subOrDub].filter(Boolean).join(" • ");
 
+  // Check if anime is already saved to the user's My List
   useEffect(() => {
     const check = async () => {
       const exists = await isInMyList(animeId);
@@ -30,13 +38,15 @@ export default function Card({ anime }) {
     check();
   }, [animeId]);
 
+  // Add anime to My List
   const handleAdd = async (e) => {
-    e.stopPropagation();
+    e.stopPropagation();  // prevent click from triggering navigation
     e.preventDefault();
     await addToMyList(anime);
     setIsInList(true);
   };
 
+  // Remove anime from My List
   const handleRemove = async (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -53,16 +63,19 @@ export default function Card({ anime }) {
         <img src={image} alt={title} />
         <div className="title">{title}</div>
 
+        {/* Hover overlay with extra info and action buttons */}
         {isHovered && (
           <div className="hover">
             <img src={image} alt="preview" />
             <div className="info">
               <h3>{title}</h3>
               {extraInfo && <p>{extraInfo}</p>}
+
               <div className="icons">
                 <IconWrapper title="Play">
                   <IoPlayCircleSharp />
                 </IconWrapper>
+
                 {!isInList ? (
                   <IconWrapper title="Add to My List" onClick={handleAdd}>
                     <AiOutlinePlus />
@@ -86,6 +99,7 @@ export default function Card({ anime }) {
   );
 }
 
+
 const Container = styled.div`
   width: 160px;
   position: relative;
@@ -105,6 +119,7 @@ const Container = styled.div`
     line-height: 1.2;
   }
 
+  // Hover overlay styles
   .hover {
     position: absolute;
     top: -10rem;
@@ -147,12 +162,14 @@ const Container = styled.div`
   }
 `;
 
+// for play, add/remove
 const IconWrapper = styled.div`
   color: #fff;
   font-size: 1.4rem;
   cursor: pointer;
   position: relative;
 
+  // Tooltip on hover
   &:hover::after {
     content: attr(title);
     position: absolute;

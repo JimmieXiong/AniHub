@@ -22,7 +22,7 @@ export const scrapeEpisodeServerList = async (
     const episodeId = searchParams.get("ep");
 
     if (!episodeId) {
-      throw createHttpError.BadRequest("❌ Missing 'ep' parameter");
+      throw createHttpError.BadRequest("Missing 'ep' parameter");
     }
 
     const { BASE, AJAX } = await getAniWatchTVUrls();
@@ -32,12 +32,12 @@ export const scrapeEpisodeServerList = async (
       headers: {
         ...headers,
         "X-Requested-With": "XMLHttpRequest",
-        Referer: `${BASE}/watch/${animeId}?ep=${episodeId}`, // ✅ correct Referer
+        Referer: `${BASE}/watch/${animeId}?ep=${episodeId}`, 
       },
     });
 
     if (!response.data?.html || typeof response.data.html !== "string") {
-      throw createHttpError(500, "❌ Invalid response: expected HTML string");
+      throw createHttpError(500, "Invalid response: expected HTML string");
     }
 
     const $: CheerioAPI = load(response.data.html);
@@ -60,7 +60,7 @@ export const scrapeEpisodeServerList = async (
 
     return result;
   } catch (err: any) {
-    console.error("❌ Error in scrapeEpisodeServerList:", err);
+    console.error("Error in scrapeEpisodeServerList:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(
@@ -69,6 +69,6 @@ export const scrapeEpisodeServerList = async (
       );
     }
 
-    throw createHttpError.InternalServerError("❌ Internal server error while scraping episode servers");
+    throw createHttpError.InternalServerError("Internal server error while scraping episode servers");
   }
 };

@@ -4,26 +4,30 @@ import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Movies() {
+  // Get the current page number from the URL or default to 1
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParam = parseInt(searchParams.get("page")) || 1;
 
-  const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(pageParam);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState([]);         // List of fetched movies
+  const [page, setPage] = useState(pageParam);      // Current page number
+  const [totalPages, setTotalPages] = useState(1);  // Total number of pages from the backend
+  const [loading, setLoading] = useState(true);     
 
+  // Keep `page` state in sync with URL param
   useEffect(() => {
     setPage(pageParam);
   }, [pageParam]);
 
+  // Fetch movie data whenever the page changes
   useEffect(() => {
     setLoading(true);
+
     axios
       .get(`http://localhost:3001/aniwatchtv/movie?page=${pageParam}`)
       .then((res) => {
         const movieResults = res.data.animes || [];
-        setMovies(movieResults);
-        setTotalPages(res.data.totalPages || 1);
+        setMovies(movieResults);                         // Set movie data
+        setTotalPages(res.data.totalPages || 1);         // Set total number of pages
         setLoading(false);
       })
       .catch((err) => {
@@ -32,9 +36,10 @@ export default function Movies() {
       });
   }, [pageParam]);
 
+  // Handles user clicking a different pagination button
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      setSearchParams({ page: newPage });
+      setSearchParams({ page: newPage }); // Update URL to reflect new page
     }
   };
 
@@ -54,16 +59,19 @@ export default function Movies() {
       <Navbar />
       <div style={styles.container}>
         <h1 style={styles.heading}>Movies</h1>
+
         {loading ? (
           <p>Loading movies...</p>
         ) : movies.length === 0 ? (
           <p>No movies found.</p>
         ) : (
           <>
+            {/* Grid of movie cards */}
             <div style={styles.grid}>
               {movies.map((anime, index) => {
                 const animeId = anime.id || anime.animeId || anime.slug;
                 const title = anime.name?.trim() || anime.title?.trim() || "Untitled";
+
                 return (
                   <Link
                     to={`/anime/${animeId}`}

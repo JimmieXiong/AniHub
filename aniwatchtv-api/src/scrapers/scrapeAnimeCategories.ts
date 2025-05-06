@@ -3,7 +3,7 @@ import { load, type CheerioAPI, type SelectorType } from "cheerio";
 import createHttpError, { type HttpError } from "http-errors";
 
 import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
-import { headers } from "../config/headers"; // ✅ fixed
+import { headers } from "../config/headers"; 
 import {
   extractCategoryAnimes,
   extractGenreList,
@@ -39,14 +39,14 @@ export const scrapeAnimeCategories = async (
       ? `${BASE}/${fixedCategory}`
       : `${BASE}/${fixedCategory}?page=${page}`;
 
-    console.log(`📥 Fetching URL: ${url}`);
+    console.log(`Fetching URL: ${url}`);
 
     const response = await axios.get(url, {
-      headers: headers, // ✅ fixed
+      headers: headers, 
     });
     
     // Debugging the raw HTML response
-    console.log("🧾 HTML Preview:", response.data.slice(0, 500)); // Preview first 500 chars of the response
+    console.log("HTML Preview:", response.data.slice(0, 500)); 
     
 
     const $: CheerioAPI = load(response.data);
@@ -56,7 +56,7 @@ export const scrapeAnimeCategories = async (
         ? ".film_list-wrap .flw-item"
         : "#main-content .tab-content .film_list-wrap .flw-item";
 
-        console.log("🎞️ Found anime count:", $(animeSelector).length); // This will show how many anime items are found by the selector
+        console.log("Found anime count:", $(animeSelector).length); // This will show how many anime items are found by the selector
 
     const categorySelector: SelectorType =
       "#main-content .block_area .block_area-header .cat-heading";
@@ -67,7 +67,7 @@ export const scrapeAnimeCategories = async (
 
     result.category = $(categorySelector)?.text()?.trim() || category;
     result.animes = extractCategoryAnimes($, animeSelector);
-    console.log("📜 Extracted Animes:", result.animes); // Log the animes extracted
+    console.log("Extracted Animes:", result.animes); // Log the animes extracted
 
     result.genres = extractGenreList($, genreSelector);
 
@@ -99,7 +99,7 @@ export const scrapeAnimeCategories = async (
 
     return result;
   } catch (err) {
-    console.error("❌ scrapeAnimeCategories error:", err);
+    console.error("scrapeAnimeCategories error:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

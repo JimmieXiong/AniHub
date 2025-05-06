@@ -45,6 +45,20 @@ export default function App() {
         <Route path="/subscribe" element={<Subscribe />} />
         <Route path="/subscribed" element={<Subscribed />} />
 
+        <Route
+          path="/change-account"
+          element={
+              <ChangeAccount />
+          }
+        />
+                <Route
+          path="/profile"
+          element={
+              <Profile />
+          }
+          />
+
+          
         {/* Protected Routes */}
         <Route
           path="/home"
@@ -115,22 +129,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AnimeDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/change-account"
-          element={
-            <ProtectedRoute>
-              <ChangeAccount />
             </ProtectedRoute>
           }
         />

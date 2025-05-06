@@ -20,7 +20,7 @@ const getEpisodeServersInfo: RequestHandler = async (req, res) => {
     const serverData = await scrapeEpisodeServerList(episodeId);
     res.status(200).json(serverData);
   } catch (err) {
-    console.error("❌ Error in getEpisodeServersInfo:", err);
+    console.error("Error in getEpisodeServersInfo:", err);
     res.status(500).json({ error: "Failed to fetch episode server data" });
   }
 };

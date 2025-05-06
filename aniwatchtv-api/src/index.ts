@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors"; 
 import { config } from "dotenv";
 import router from "./routes";
-import "./utils/axiosDebug"; // ✅ ← this adds global axios debug logging
 
 
 // This reads “.env” and merges its contents into process.env

@@ -62,9 +62,7 @@ export const extractTop10Animes = (
     });
     return animes;
   } catch (err) {
-    /////////////////////////////////////////////////////////////////////
-    console.error("Error in extract_top10_animes :", err); // for TESTING//
-    /////////////////////////////////////////////////////////////////////
+    console.error("Error in extract_top10_animes :", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

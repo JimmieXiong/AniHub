@@ -3,7 +3,7 @@ import { load, type CheerioAPI, type SelectorType } from "cheerio";
 import createHttpError, { type HttpError } from "http-errors";
 
 import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
-import { headers } from "../config/headers"; // ✅ fixed import
+import { headers } from "../config/headers"; 
 import {
   extractSearchedAnimes,
   extractMostPopularAnimes,
@@ -31,7 +31,7 @@ export const scrapeAnimeSearchResults = async (
     const { SEARCH } = await getAniWatchTVUrls();
 
     const response = await axios.get(`${SEARCH}?keyword=${query}&page=${page}`, {
-      headers, // ✅ use constant randomized headers
+      headers, 
     });
 
     const $: CheerioAPI = load(response.data);
@@ -43,7 +43,7 @@ export const scrapeAnimeSearchResults = async (
     const genreSelector: SelectorType =
       "#main-sidebar .block_area.block_area_sidebar.block_area-genres .sb-genre-list li";
 
-    // ✅ Clean and deduplicate animes
+    // Clean and deduplicate animes
     const rawAnimes = extractSearchedAnimes($, animeSelector);
     const seen = new Set<string>();
     result.animes = rawAnimes.filter((anime) => {
@@ -85,7 +85,7 @@ export const scrapeAnimeSearchResults = async (
 
     return result;
   } catch (err) {
-    console.error("❌ Error in scrapeAnimeSearchResults:", err);
+    console.error("Error in scrapeAnimeSearchResults:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

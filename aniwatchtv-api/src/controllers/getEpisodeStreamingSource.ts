@@ -2,10 +2,9 @@ import type { RequestHandler } from "express";
 import axios from "axios";
 import { load, type CheerioAPI } from "cheerio";
 import createHttpError from "http-errors";
-
 import { scrapeStreamingSourceFromMegaCloud } from "../scrapers/scrapeStreamingSourceFromMegaCloud";
 import { getAniWatchTVUrls } from "../utils/aniwatchtvRoutes";
-import { headers } from "../config/headers"; // ✅ fixed import
+import { headers } from "../config/headers"; 
 
 type AnilistID = number | null;
 type MalID = number | null;
@@ -30,14 +29,14 @@ const getEpisodeStreamingSourceInfo: RequestHandler = async (req, res) => {
 
     const aniwatchUrls = await getAniWatchTVUrls();
 
-    // 🎥 Get stream info
+    // Get stream info
     const streamingData = await scrapeStreamingSourceFromMegaCloud(episodeId, category);
 
-    // 🧠 Extract AniList & MAL IDs
+    // Extract AniList & MAL IDs
     const animePageUrl = new URL(episodeId.split("?ep=")[0], aniwatchUrls.BASE).href;
     const animePage = await axios.get(animePageUrl, {
       headers: {
-        ...headers, // ✅ fixed usage
+        ...headers, // fixed usage
         Referer: aniwatchUrls.BASE,
         "X-Requested-With": "XMLHttpRequest",
       },
@@ -63,7 +62,7 @@ const getEpisodeStreamingSourceInfo: RequestHandler = async (req, res) => {
       malID,
     });
   } catch (err) {
-    console.error("❌ Error in getEpisodeStreamingSourceInfo:", err);
+    console.error("Error in getEpisodeStreamingSourceInfo:", err);
     res.status(500).json({ error: "Failed to fetch episode source data" });
   }
 };

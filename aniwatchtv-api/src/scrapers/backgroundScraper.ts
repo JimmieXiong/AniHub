@@ -1,5 +1,4 @@
 /**
- * 🔁 backgroundScraper.ts
  * This script scrapes all anime data from AniWatch's A-Z pages,
  * fetches detailed info (like description, rating, origin),
  * and writes a JSON file to disk.
@@ -31,17 +30,17 @@ const runBackgroundScraper = async () => {
   const allAnimes: ScrapedAnime[] = [];
 
   for (let page = 1; page <= maxPages; page++) {
-    console.log(`📄 Fetching A-Z page ${page}...`);
+    console.log(`Fetching A-Z page ${page}...`);
     const animes = await scrapeAtoZAnimeList(page);
 
     if (!Array.isArray(animes) || animes.length === 0) {
-      console.log("✅ No more animes found. Stopping.");
+      console.log("No more animes found. Stopping.");
       break;
     }
 
     for (const anime of animes) {
       if (!anime.id) {
-        console.warn("⚠️ Skipping anime with null ID.");
+        console.warn("Skipping anime with null ID.");
         continue;
       }
     
@@ -69,10 +68,10 @@ const runBackgroundScraper = async () => {
             origin,
           });
     
-          console.log(`✅ Scraped: ${about.info.name ?? anime.id} (${origin})`);
+          console.log(`Scraped: ${about.info.name ?? anime.id} (${origin})`);
         }
       } catch (err) {
-        console.error(`❌ Failed scraping ${anime.name || anime.id}:`, err);
+        console.error(`Failed scraping ${anime.name || anime.id}:`, err);
       }
     }
   }    

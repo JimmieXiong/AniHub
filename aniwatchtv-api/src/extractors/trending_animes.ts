@@ -34,7 +34,7 @@ export const extractTrendingAnimes = (
 
     return animes;
   } catch (err) {
-    console.error("❌ Error in extractTrendingAnimes:", err);
+    console.error("Error in extractTrendingAnimes:", err);
 
     if (err instanceof AxiosError) {
       throw createHttpError(

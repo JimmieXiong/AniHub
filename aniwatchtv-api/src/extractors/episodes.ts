@@ -21,9 +21,7 @@ export const extractEpisodeList = (
 
     return episodes;
   } catch (err) {
-    ///////////////////////////////////////////////////////////////////
-    console.error("Error in extract_episodes_info :", err); // for TESTING//
-    ///////////////////////////////////////////////////////////////////
+    console.error("Error in extract_episodes_info :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

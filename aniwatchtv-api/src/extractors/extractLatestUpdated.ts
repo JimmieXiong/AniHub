@@ -16,9 +16,7 @@ export const extractLatestEpisodes = (
 
     return animes;
   } catch (err) {
-    ////////////////////////////////////////////////////////////////
-    console.error("Error in extract_latest_episodes :", err); // for TESTING//
-    ////////////////////////////////////////////////////////////////
+    console.error("Error in extract_latest_episodes :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

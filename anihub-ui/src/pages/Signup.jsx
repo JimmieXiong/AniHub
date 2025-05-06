@@ -1,62 +1,86 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import AuthBackground from "../components/AuthBackground";
-import Header from '../components/Header';
+
+import AuthBackground from "../components/AuthBackground"; 
+import Header from '../components/Header'; 
+
+// Firebase auth and Firestore setup
 import { firebaseAuth } from '../utils/firebase-config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from 'firebase/auth'; 
+import { doc, setDoc } from "firebase/firestore"; 
 import { firestore } from "../utils/firebase-config";
 
+import { useNavigate } from 'react-router-dom';
+
+import LoadingSpinner from '../components/LoadingSpinner';
+
+
+
 export default function Signup() {
+  // Form state for email and password
   const [formValues, setFormValues] = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+
+  // UI states
+  const [loading, setLoading] = useState(false); // Show spinner
+  const [successMessage, setSuccessMessage] = useState(''); // Message after signup
+  const [error, setError] = useState(''); 
+
+  const navigate = useNavigate(); // Navigate between pages
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
-    setError('');
+    setError(''); 
   };
 
+  // Signup logic with Firebase
   const handleSignUp = async () => {
     const { email, password } = formValues;
 
+      // Log the email and password to the console for debugging
+      console.log("Email: ", email);  
+      console.log("Password: ", password); 
+
+    // Input validation
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
     }
 
     setSuccessMessage("Successfully created account!");
-    setLoading(true);
+    setLoading(true); // Show spinner
 
     try {
+      // Create Firebase user
       const { user } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
 
+      // Add user document to Firestore with default premium status
       await setDoc(doc(firestore, "users", user.uid), {
         email: user.email,
-        isPremium: false,
+        isPremium: false, // default to free account if ever hack can be easily modified since front end and no checks 
       });
 
+      // Show spinner for a moment then redirect to home
       setTimeout(() => {
         setLoading(false);
         navigate("/home");
       }, 3000);
+
     } catch (error) {
       console.error("Signup failed:", error.message);
-      setError("Signup failed. Try a different email.");
+      setError("Signup failed. Try a different email."); 
       setSuccessMessage('');
       setLoading(false);
     }
   };
 
+  // Show loading spinner while account is being created
   if (loading) {
     return <LoadingSpinner message={successMessage} />;
   }
 
+  // signup form UI
   return (
     <Container>
       <AuthBackground />
@@ -86,8 +110,11 @@ export default function Signup() {
               onChange={handleInputChange}
             />
             {error && <p className="error-text">{error}</p>}
+
             <button onClick={handleSignUp}>Create Account</button>
+
             <div className="or-text">or</div>
+
             <button className="login-button" onClick={() => navigate('/login')}>
               Login
             </button>
@@ -120,8 +147,8 @@ const Container = styled.div`
     align-items: center;
     text-align: center;
     max-width: 420px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.1); // semi-transparent background
+    backdrop-filter: blur(14px); // frosted glass effect
     border-radius: 16px;
     padding: 2.5rem 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
@@ -189,6 +216,7 @@ const Container = styled.div`
       width: 100%;
     }
 
+    // Primary sign-up button style
     button:not(.login-button) {
       background-color: #e50914;
       color: white;
@@ -207,6 +235,7 @@ const Container = styled.div`
       color: #ccc;
     }
 
+    // Secondary outlined login button
     .login-button {
       background: transparent;
       border: 1px solid #fff;
@@ -217,6 +246,13 @@ const Container = styled.div`
         color: #000;
         transform: translateY(-1px);
       }
+    }
+
+    .error-text {
+      color: #ff6b6b;
+      font-size: 0.9rem;
+      text-align: left;
+      margin: -0.5rem 0 0;
     }
   }
 `;

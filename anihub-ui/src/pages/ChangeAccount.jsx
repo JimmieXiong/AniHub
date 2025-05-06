@@ -40,7 +40,7 @@ export default function ChangeAccount() {
         }
         await reauthenticateUser(user, currentPassword);
         await updatePassword(user, newPassword);
-        console.log("Password updated successfully.");
+        console.log("Password updated successfully.", newPassword);
       }
 
       setMessage("Account updated successfully.");

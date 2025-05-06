@@ -37,9 +37,7 @@ export const extractExtraAboutInfo = (
 
     return moreInfo;
   } catch (err) {
-    ///////////////////////////////////////////////////////////////////
-    console.error("Error in extract_extra_about_info :", err); // for TESTING//
-    ///////////////////////////////////////////////////////////////////
+    console.error("Error in extract_extra_about_info :", err); 
 
     if (err instanceof AxiosError) {
       throw createHttpError(

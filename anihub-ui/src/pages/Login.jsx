@@ -1,46 +1,59 @@
+
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import AuthBackground from "../components/AuthBackground";
-import Header from '../components/Header';
-import { firebaseAuth } from '../utils/firebase-config';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import AuthBackground from "../components/AuthBackground"; 
+import Header from '../components/Header'; 
+import { firebaseAuth } from '../utils/firebase-config'; 
+import { signInWithEmailAndPassword } from 'firebase/auth'; 
 import { useNavigate } from 'react-router-dom';
 
+
 export default function Login() {
+  // Form input state for email and password
   const [formValues, setFormValues] = useState({ email: '', password: '' });
+  // Spinner loading state
   const [loading, setLoading] = useState(false);
+  // Success message shown after login
   const [successMessage, setSuccessMessage] = useState("");
+  // Error message for failed login
   const [error, setError] = useState("");
+  // For navigating to other routes
   const navigate = useNavigate();
 
+  // Handle input change for form fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
-    setError("");
+    setError(""); // Clear error when user starts typing
   };
 
+  // Login function using Firebase Auth
   const handleLogin = async () => {
-    setError("");
+    setError(""); // Clear previous errors
     const { email, password } = formValues;
-  
+
+    // Validation check
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
     }
-  
-    setLoading(true);
+
+    setLoading(true); // Show spinner
     try {
+      // Attempt login
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       setSuccessMessage("Successfully logged in.");
-      
-      // Wait 2 seconds, then stop loading and navigate
+
+      // After delay, hide spinner and go to /home
       setTimeout(() => {
-        setLoading(false);      // hide spinner
-        navigate("/home");      // Then navigate
+        setLoading(false);
+        navigate("/home");
       }, 2000);
-      
+
     } catch (error) {
       console.error("Login failed:", error.message);
+
+      // Handle specific Firebase errors
       if (
         error.code === "auth/invalid-credential" ||
         error.code === "auth/user-not-found" ||
@@ -50,10 +63,12 @@ export default function Login() {
       } else {
         setError("Something went wrong. Please try again.");
       }
-      setLoading(false); 
+
+      setLoading(false);
     }
   };
 
+  // If loading, show spinner 
   if (loading) {
     return (
       <SpinnerWrapper>
@@ -63,6 +78,7 @@ export default function Login() {
     );
   }
 
+  // Login Form UI
   return (
     <Container>
       <AuthBackground />
@@ -77,6 +93,7 @@ export default function Login() {
             <h3>Login</h3>
           </div>
           <div className="form">
+            {/* Email Input */}
             <input
               type="email"
               placeholder="Email address"
@@ -84,6 +101,7 @@ export default function Login() {
               value={formValues.email}
               onChange={handleInputChange}
             />
+            {/* Password Input */}
             <input
               type="password"
               placeholder="Password"
@@ -91,9 +109,12 @@ export default function Login() {
               value={formValues.password}
               onChange={handleInputChange}
             />
+            {/* Show error if exists */}
             {error && <p className="error-text">{error}</p>}
+            {/* Login Button */}
             <button onClick={handleLogin}>Login</button>
             <div className="or-text">or</div>
+            {/* Redirect to signup */}
             <button className="login-button" onClick={() => navigate('/signup')}>
               Create Account
             </button>
@@ -104,11 +125,14 @@ export default function Login() {
   );
 }
 
+
+// Spinner animation
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
+// Spinner overlay styling
 const SpinnerWrapper = styled.div`
   position: fixed;
   inset: 0;
@@ -137,6 +161,7 @@ const SpinnerWrapper = styled.div`
   }
 `;
 
+// Main layout container for login
 const Container = styled.div`
   position: relative;
   height: 100vh;
@@ -235,6 +260,7 @@ const Container = styled.div`
       width: 100%;
     }
 
+    // Login button style
     button:not(.login-button) {
       background-color: #e50914;
       color: white;
@@ -246,6 +272,7 @@ const Container = styled.div`
       }
     }
 
+    // Separator text
     .or-text {
       text-align: center;
       font-size: 1rem;
@@ -253,6 +280,7 @@ const Container = styled.div`
       color: #ccc;
     }
 
+    // Signup redirect button
     .login-button {
       background: transparent;
       border: 1px solid #fff;
@@ -266,4 +294,3 @@ const Container = styled.div`
     }
   }
 `;
-

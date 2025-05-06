@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 
 export default function AnimeDetails() {
-  const { animeId } = useParams();
-  const navigate = useNavigate();
+  const { animeId } = useParams(); // Get anime ID from URL
+  const navigate = useNavigate(); 
+
+  // storing anime details and episodes
   const [animeDetails, setAnimeDetails] = useState(null);
   const [episodes, setEpisodes] = useState([]);
 
+  // Fetch anime details and episodes when component mounts or animeId changes
   useEffect(() => {
     const fetchDetails = async () => {
       try {
+        // Fetch both anime details and episode list in parallel
         const [detailsRes, episodesRes] = await Promise.all([
           axios.get(`http://localhost:3001/aniwatchtv/anime/${animeId}`),
           axios.get(`http://localhost:3001/aniwatchtv/episodes/${animeId}`)
@@ -21,15 +25,16 @@ export default function AnimeDetails() {
         setEpisodes(episodesRes.data.episodes || []);
       } catch (err) {
         console.error("Error fetching anime data:", err);
-        navigate("/notfound");
       }
     };
 
     fetchDetails();
-  }, [animeId, navigate]);
+  }, [animeId]);
 
+  // Show loading state until data is fetched
   if (!animeDetails) return <div className="p-4 text-white">Loading...</div>;
 
+  // Destructure data
   const { info, relatedAnimes = [] } = animeDetails;
 
   return (
@@ -40,11 +45,11 @@ export default function AnimeDetails() {
         style={{
           padding: "2rem",
           color: "white",
-          backgroundColor: "#0d0d0d", 
+          backgroundColor: "#0d0d0d",
           minHeight: "100vh",
         }}
       >
-        {/* Anime Info */}
+        {/* Anime Banner & Description */}
         <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
           <img
             src={info?.img}
@@ -65,7 +70,7 @@ export default function AnimeDetails() {
           </div>
         </div>
 
-        {/* Episodes */}
+        {/* Episode List */}
         {episodes.length > 0 && (
           <>
             <h2 style={{ fontSize: "1.5rem", marginTop: "3rem", marginBottom: "1rem" }}>Episodes</h2>
@@ -108,6 +113,7 @@ export default function AnimeDetails() {
                 gap: "1.5rem",
               }}
             >
+              {/* Remove duplicate related animes by ID */}
               {[...new Map(relatedAnimes.map((a) => [a.id, a])).values()].map((rel) => (
                 <Link
                   key={rel.id}

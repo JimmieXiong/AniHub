@@ -4,38 +4,51 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 
 export default function WatchEpisode() {
+  // Get dynamic episodeId from route parameters
   const { episodeId } = useParams();
+
+  // Access query parameters (?ep=xxx) from URL
   const location = useLocation();
 
+  // State variables to manage video loading, success, and errors
   const [videoUrl, setVideoUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // useEffect runs when component mounts or when episodeId/query changes
   useEffect(() => {
     const fetchVideo = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
+        // Extract the query parameter "ep" from the URL
         const searchParams = new URLSearchParams(location.search);
         const epId = searchParams.get("ep");
 
+        // Validate both route and query parameters
         if (!episodeId || !epId) {
           setError("Missing episode parameters");
           return;
         }
 
+        // API call to fetch video sources for the episode
         const url = `http://localhost:3001/aniwatchtv/episode-srcs?id=${episodeId}?ep=${epId}&server=MegaCloud&category=sub`;
-
         const res = await axios.get(url);
+
+        // Extract the list of video sources from response
         const sources = res.data?.sources || [];
+
+        // Pick the HLS stream if available, fallback to first source
         const hlsSource = sources.find((src) => src.type === "hls") || sources[0];
 
+        // If no video URL was found, set error
         if (!hlsSource?.url) {
           setError("No playable video source found");
           return;
         }
 
+        // Set video URL in state
         setVideoUrl(hlsSource.url);
       } catch (err) {
         console.error("Failed to fetch video source:", err);
@@ -46,10 +59,11 @@ export default function WatchEpisode() {
     };
 
     fetchVideo();
-  }, [episodeId, location.search]);
+  }, [episodeId, location.search]); // Re-run if episodeId or query string changes
 
   return (
     <>
+      {/* Inline styling for player layout, form, and buttons */}
       <style>{`
         .watch-wrapper {
           background-color: #0d0d0d;
@@ -120,13 +134,16 @@ export default function WatchEpisode() {
         }
       `}</style>
 
+      {/* Page wrapper */}
       <div className="watch-wrapper">
+        {/* Navbar remains visible for consistency */}
         <Navbar />
         <div className="watch-container">
           <div className="watch-content">
             <h1>Now Playing</h1>
             <p>Episode: {episodeId}</p>
 
+            {/* Conditional UI logic */}
             {isLoading ? (
               <p>Loading...</p>
             ) : error ? (
@@ -136,6 +153,7 @@ export default function WatchEpisode() {
               </div>
             ) : (
               <>
+                {/* Main video player */}
                 <div className="video-player">
                   <video
                     src={videoUrl}
@@ -145,6 +163,7 @@ export default function WatchEpisode() {
                   />
                 </div>
 
+                {/* Extra info & manual player option */}
                 <div className="controls-section">
                   <h3>Player Option</h3>
                   <p>
