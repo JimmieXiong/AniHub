@@ -24,7 +24,7 @@ const getAnimeDetails: RequestHandler = async (req, res) => {
       );
     }
  
-    // scrapeAnimeDetails("jujutsu-kaisen-2nd-season-18413");
+    // ex scrapeAnimeDetails("jujutsu-kaisen-2nd-season-18413");
     const data = await scrapeAnimeDetails(animeId);
     res.status(200).json(data);
   } catch (err) {
