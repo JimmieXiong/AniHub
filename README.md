@@ -1,17 +1,84 @@
-# AniHub: Anime & Donghua Streaming Platform
+# AniHub 
+**A Full-Stack Anime & Donghua Streaming Platform**
 
-## Overview
-AniHub is a streaming platform for anime and donghua, designed to be a centralized hub for easier content discovery and viewing. It lets users search, browse, and stream a variety of anime and donghua through a straightforward, easy-to-use interface.
+AniHub is a full-stack web application that offers a centralized streaming experience for both Japanese anime and Chinese donghua. Inspired by platforms like KissAnime, AniWatchTV and similar platforms.
+
+AniHub aggregates content from third-party sources and delivers it through a clean, responsive user interface.
+
+**Educational Use Only:** This project was developed as a capstone for academic purposes. It is not intended for public distribution or commercial use.
+
+---
+
+## Features
+
+- **Search & Browse**: Instantly explore anime and donghua by name, genre, or origin (Japan/China).
+- **Episode Streaming**: Stream decrypted MegaCloud videos via external players (e.g. VLC).
+- **My List**: Save shows to your personalized watchlist using Firestore.
+- **Premium Access**: Subscribe via Stripe to unlock exclusive features like Movies and full episode access.
+- **Origin Filtering**: Filter anime based on country of origin for tailored browsing. (No playback/nor anime detail If more time will implement fix)
+- **Auth & Role Management**: Secure Firebase Authentication with Firestore user roles (free vs premium).
+
+---
+
+## Tech Stack
+
+### Frontend:
+- **React** (with hooks & functional components)
+- **Styled-Components** (for styling)
+- **Axios** (for HTTP requests)
+- **React Router DOM** (for protected/public routing)
+
+### Backend:
+- **Node.js** + **Express**
+- **TypeScript** for backend logic and route typing
+- **Cheerio** + **Axios** (for scraping AniWatchTV)
+- **Firebase Admin SDK** (for secure user role management)
+- **Stripe** (for subscription payments)
+
+### Cloud Services:
+- **Firebase Authentication** – user registration/login
+- **Firestore** – stores user data, My List, and premium status
+
+---
+
+## API Used
+
+AniHub uses a modified version of [falcon71181's Anime-API](https://github.com/falcon71181/Anime-API), a scraping backend that pulls metadata, episodes, and streaming sources from **AniWatchTV**.
+
+### API Functionality:
+- `/aniwatchtv` – Featured, Latest, Trending
+- `/aniwatchtv/search` – Search by title
+- `/aniwatchtv/anime-details` – Series metadata
+- `/aniwatchtv/episodes` – Episode list
+- `/aniwatchtv/episode-srcs` – Decrypted MegaCloud video URL
+- `/aniwatchtv/movie` – Premium movies by page
+- `/aniwatchtv/latest` – Recently updated episodes
+
+---
+
+## What I Learned
+
+Working on AniHub gave me real insight into:
+- How real anime streaming platforms (AniWatchTV, KissAnime, etc.) structure and deliver content
+- How to build full-stack apps with clean separation between frontend/backend
+- Implementing **basic route protection**, **premium gating**, and **secure API integration**
+- Managing async scraping, pagination, and user-specific content
+- **Debugging... a lot. A LOT.** Seriously, I now speak “console.log()” 
+
+---
 
 ## Developer
-**Jimmie Xiong**
 
-## NOTE:
-This is an **educational project**—there are many bugs, and it is **definitely not ready for deployment**. However, with more time and effort, it could definitely become something bigger!
+**Jimmie Xiong**  
+B.S. in Computer Science  
+Metropolitan State University 2025
 
-- AniHub makes it easy to find and stream anime and donghua—though, fair warning, it depends on whether or not scraping gets blocked.
-- Tried to design the platform just the way I imagined it, keeping it simple. Users can easily search and navigate through all the content.
-- AniHub uses a tweaked version of the [Anime-API](https://github.com/falcon71181/Anime-API) to pull in content data and enhance the user experience.
+This capstone was built (SOLO), late nights, and lots of caffeine.
 
-## Project Insights
-This project has been a great learning experience. I got to experience how anime streaming platforms like Kissanime and GOGOAnime work under the hood. Developing AniHub gave me hands-on experience with building a content streaming platform, integrating APIs, and dealing with all the challenges of content delivery.
+---
+
+## Disclaimer
+
+AniHub is a student project. It does not host or own any video content. All data is scraped for educational purposes only. Please respect the original content creators and streaming providers.
+
+---
